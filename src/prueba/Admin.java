@@ -18,11 +18,9 @@ import javax.swing.table.DefaultTableModel;
  * @author Usuario
  */
 public class Admin extends javax.swing.JFrame {
-    
+    private int idUsuario;
     private Connection conexion;
     private String bbdd = "jdbc:hsqldb:hsql://localhost/";
-    private int userID;
-    int filaSelect;
   
     /**
      * Creates new form Principal
@@ -45,6 +43,8 @@ public class Admin extends javax.swing.JFrame {
     public Admin(int id) {
         initComponents();
         System.out.println(id);
+        this.idUsuario = id;
+        System.out.println(id);
         try {
             Class.forName("org.hsqldb.jdbc.JDBCDriver");
             conexion = DriverManager.getConnection(bbdd, "SA", "SA");
@@ -63,6 +63,10 @@ public class Admin extends javax.swing.JFrame {
         
         actualizarTable(conexion);
         combox();
+    }
+    
+    public int obtenerIdUsuario() {
+        return idUsuario;
     }
     
     private String obtenerNombreUsuario(int id) {
@@ -570,7 +574,6 @@ public class Admin extends javax.swing.JFrame {
         // TODO add your handling code here:
         int fila = table1.getSelectedRow();
         
-        filaSelect = fila + 1;
         
         jTextField1.setText(table1.getValueAt(fila, 0).toString());
         jTextField2.setText(table1.getValueAt(fila, 1).toString());
@@ -584,8 +587,11 @@ public class Admin extends javax.swing.JFrame {
         if (table1.getSelectedColumn()==7){
             int codAnime = (int) table1.getValueAt(fila, 6);
             System.out.println(codAnime); 
+            
+            int idUsuario = obtenerIdUsuario();
+            System.out.println(idUsuario); 
         
-            Anime A = new Anime(codAnime);
+            Animes A = new Animes(idUsuario,codAnime);
             A.setVisible(true);
         }
     }//GEN-LAST:event_table1MouseClicked

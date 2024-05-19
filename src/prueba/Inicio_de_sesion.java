@@ -4,6 +4,7 @@
  */
 package prueba;
 
+import database.UsuarioDAO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
@@ -12,10 +13,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.DriverManager;
+import prueba.Conexion;
 
 public class Inicio_de_sesion extends javax.swing.JFrame {
+    private UsuarioDAO usuarioDAO;
     private Connection conexion;
-    private String bbdd = "jdbc:hsqldb:hsql://localhost/";
     private int userID;
    
     
@@ -25,17 +27,8 @@ public class Inicio_de_sesion extends javax.swing.JFrame {
     public Inicio_de_sesion() {
         initComponents();
         
-        try {
-            Class.forName("org.hsqldb.jdbc.JDBCDriver");
-            conexion = DriverManager.getConnection(bbdd, "SA", "SA");
-            if (conexion != null) {
-                System.out.println("Conexión creada exitosamente");
-            } else {
-                System.out.println("Problema al crear la conexión");
-            }
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace(System.out);
-        }
+        usuarioDAO = new UsuarioDAO();
+
         
         btnIniciarSesion.addActionListener(new ActionListener() {
             @Override
@@ -44,6 +37,7 @@ public class Inicio_de_sesion extends javax.swing.JFrame {
             }
         });
     }
+    
     
     private void iniciarSesion() {
         String nombreUsuario = txtUsuario.getText();
@@ -54,9 +48,9 @@ public class Inicio_de_sesion extends javax.swing.JFrame {
             return;
         }
 
-        if (verificarCredenciales(nombreUsuario, contraseña)) {
+        if (usuarioDAO.verificarCredenciales(nombreUsuario, contraseña)) {
           // Obtener la ID del usuario
-            userID = obtenerIDUsuario(nombreUsuario);
+            userID = usuarioDAO.obtenerIDUsuario(nombreUsuario);
             
             
             if (nombreUsuario.equals("admin")) {
@@ -65,7 +59,7 @@ public class Inicio_de_sesion extends javax.swing.JFrame {
                 pa.setVisible(true);
             } else {
                 // Abre el panel normal de usuario
-                Usuario pu = new Usuario(userID );
+                Usuarios pu = new Usuarios(userID );
                 pu.setVisible(true);
             }
 
@@ -77,38 +71,6 @@ public class Inicio_de_sesion extends javax.swing.JFrame {
     }
     
     
-    
-    
-    private boolean verificarCredenciales(String nombreUsuario, String contraseña) {
-        try {
-            String sql = "SELECT * FROM Usuario WHERE nombre_usuario = ? AND contraseña = ?";
-            PreparedStatement statement = conexion.prepareStatement(sql);
-            statement.setString(1, nombreUsuario);
-            statement.setString(2, contraseña);
-            ResultSet resultSet = statement.executeQuery();
-            
-            return resultSet.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    private int obtenerIDUsuario(String nombreUsuario) {
-        try {
-            String sql = "SELECT usuario_id FROM Usuario WHERE nombre_usuario = ?";
-            PreparedStatement statement = conexion.prepareStatement(sql);
-            statement.setString(1, nombreUsuario);
-            ResultSet resultSet = statement.executeQuery();
-            
-            if (resultSet.next()) {
-                return resultSet.getInt("usuario_id");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1; // Si no se encontró el usuario, se devuelve -1
-    }
-
 
     /**
      * This method is called from within the constructor to initialize the form.

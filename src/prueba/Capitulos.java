@@ -25,7 +25,7 @@ public class Capitulos extends javax.swing.JFrame {
         initComponents();
     }
 
-    public Capitulos(int codCap, int codAnime) {
+    public Capitulos(int idUsuario,int codCap, int codAnime) {
         initComponents();
         System.out.println(codAnime);
         try {
@@ -80,8 +80,12 @@ public class Capitulos extends javax.swing.JFrame {
                     primerComentario = false;
                 }
 
-                String usuarioFecha = resultSet.getString("nombre_usuario") + " - " + resultSet.getString("fecha_comentario");
+                String usuarioFecha = resultSet.getString("nombre_usuario") != null ? resultSet.getString("nombre_usuario") + " - " + resultSet.getString("fecha_comentario") : "";
                 String comentario = resultSet.getString("comentario");
+                // Verifica si el comentario es null, y si lo es, establece una cadena vacía
+                if (comentario == null) {
+                    comentario = "";
+                }
 
                 // Crea un panel para contener el nombre de usuario y la fecha
                 JPanel panelUsuarioFecha = new JPanel();
