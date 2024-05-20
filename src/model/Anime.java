@@ -18,9 +18,42 @@ public class Anime {
     private int idAnime;
     private String descripcion;
     private String imagen; // Nuevo atributo para la imagen
+    private int idCategoria;
+    private int idGenero;
 
     // Getters y setters
 
+    
+    public Anime() {
+        
+    }
+    
+    public Anime(int idAnime, String nombre, int anyo, String descripcion, String director, String estudio, int idCategoria, int idGenero) {
+        this.idAnime = idAnime;
+        this.nombre = nombre;
+        this.anyo = anyo;
+        this.descripcion = descripcion;
+        this.director = director;
+        this.estudio = estudio;
+        this.idCategoria = idCategoria;
+        this.idGenero = idGenero;
+    }
+    public Anime(int idAnime, String nombre, int anyo, String descripcion, String director, String estudio, Categoria categoria, Genero genero) {
+        this.idAnime = idAnime;
+        this.nombre = nombre;
+        this.anyo = anyo;
+        this.descripcion = descripcion;
+        this.director = director;
+        this.estudio = estudio;
+        this.categoria = categoria;
+        this.genero = genero;
+    }
+   
+    
+
+    
+    
+    
     public String getNombre() {
         return nombre;
     }

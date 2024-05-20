@@ -191,6 +191,30 @@ public class AnimeDAO {
             return false;
         }
     }
+    
+    
+    
+    public boolean actualizarAnime(Anime anime) {
+    String sql = "UPDATE Anime SET nombre = ?, anyo = ?, descripcion = ?, director = ?, estudio = ?, id_Categoria = ?, id_Genero = ? WHERE anime_id = ?";
+
+    try (Connection con = Conexion.obtenerConexion();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, anime.getNombre());
+        ps.setInt(2, anime.getAnyo());
+        ps.setString(3, anime.getDescripcion());
+        ps.setString(4, anime.getDirector());
+        ps.setString(5, anime.getEstudio());
+        ps.setInt(6, anime.getCategoria().getCategoriaId());
+        ps.setInt(7, anime.getGenero().getGeneroId());
+        ps.setInt(8, anime.getIdAnime());
+
+        int rowsAffected = ps.executeUpdate();
+        return rowsAffected > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
 
     public boolean actualizar(Anime anime) {
         String sql = "UPDATE anime SET nombre = ?, descripcion = ?, anyo = ?, director = ?, estudio = ?, imagen = ?, id_categoria = ?, id_genero = ? WHERE anime_id = ?";

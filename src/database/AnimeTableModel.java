@@ -21,12 +21,16 @@ public class AnimeTableModel extends AbstractTableModel {
             
             case 9: // Agregar una nueva columna para detalles
                 return ImageIcon.class;
+                case 10: // Agregar una nueva columna para detalles
+                return ImageIcon.class;
+                 case 11: // Agregar una nueva columna para detalles
+                return ImageIcon.class;
             default:
                 return Object.class;
         }
     }
     private List<Anime> animes;
-    private final String[] columnNames = {"Nombre", "Año", "Director", "Estudio", "Categoria", "Genero", "ID Anime", "Descripcion", "Imagen", "Detalles"};
+    private final String[] columnNames = {"Nombre", "Año", "Director", "Estudio", "Categoria", "Genero", "ID Anime", "Descripcion", "Imagen", "Detalles","Modificar","Eliminar"};
 
     public void setAnimes(List<Anime> animes) {
         this.animes = animes;
@@ -62,6 +66,8 @@ public class AnimeTableModel extends AbstractTableModel {
             case 7: return anime.getDescripcion();
             case 8: return anime.getImagen();
             case 9: return new ImageIcon(getClass().getResource("/imagenes/File-Text.jpg"));
+            case 10: return new ImageIcon(getClass().getResource("/imagenes/editar.jpg"));
+            case 11: return new ImageIcon(getClass().getResource("/imagenes/papelera.jpg"));
             default: return null;
         }
         

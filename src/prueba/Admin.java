@@ -4,64 +4,56 @@
  */
 package prueba;
 
+import database.AnimeDAO;
+import database.AnimeTableModel;
+import database.CategoriaDAO;
+import database.GeneroDAO;
+import database.UsuarioDAO;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
+import model.Anime;
 
 /**
  *
  * @author Usuario
  */
 public class Admin extends javax.swing.JFrame {
+    
     private int idUsuario;
-    private Connection conexion;
-    private String bbdd = "jdbc:hsqldb:hsql://localhost/";
+    private UsuarioDAO usuarioDAO;
+    private AnimeDAO animeDAO;
+    private CategoriaDAO categoriaDAO;
+    private GeneroDAO generoDAO;
   
     /**
      * Creates new form Principal
      */
     public Admin() {
         initComponents();
-        try {
-            Class.forName("org.hsqldb.jdbc.JDBCDriver");
-            conexion = DriverManager.getConnection(bbdd, "SA", "SA");
-            if (conexion != null) {
-                System.out.println("Conexión creada exitosamente");
-            } else {
-                System.out.println("Problema al crear la conexión");
-            }
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace(System.out);
-        }
+        usuarioDAO = new UsuarioDAO();
+        animeDAO = new AnimeDAO();
+        categoriaDAO = new CategoriaDAO();
+        generoDAO = new GeneroDAO();
     }
     
     public Admin(int id) {
-        initComponents();
-        System.out.println(id);
+        
+        this();
         this.idUsuario = id;
         System.out.println(id);
-        try {
-            Class.forName("org.hsqldb.jdbc.JDBCDriver");
-            conexion = DriverManager.getConnection(bbdd, "SA", "SA");
-            if (conexion != null) {
-                System.out.println("Conexión creada exitosamente");
-            } else {
-                System.out.println("Problema al crear la conexión");
-            }
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace(System.out);
-        }
         
-        String nombreUsuario = obtenerNombreUsuario(id);
+        String nombreUsuario = usuarioDAO.obtenerNombreUsuario(id);
         System.out.println("Nombre de usuario obtenido: " + nombreUsuario);
-        lblNombreUsuario.setText( nombreUsuario);
+        lblNombreUsuario.setText(nombreUsuario);
         
-        actualizarTable(conexion);
+        actualizarTable();
         combox();
     }
     
@@ -69,312 +61,68 @@ public class Admin extends javax.swing.JFrame {
         return idUsuario;
     }
     
-    private String obtenerNombreUsuario(int id) {
-        try {
-            String sql = "SELECT nombre_usuario FROM Usuario WHERE usuario_id = ?";
-            PreparedStatement statement = conexion.prepareStatement(sql);
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
+   public void actualizarTable() {
+        AnimeTableModel model = new AnimeTableModel();
+        List<Anime> animes = animeDAO.listarAnimesConDetalles();
+        model.setAnimes(animes);
+        table1.setModel(model);
 
-            if (resultSet.next()) {
-                return resultSet.getString("nombre_usuario");
+        // Ocultar la columnas
+        table1.getColumnModel().getColumn(6).setMinWidth(0);
+        table1.getColumnModel().getColumn(6).setMaxWidth(0);
+        table1.getColumnModel().getColumn(6).setWidth(0);
+        
+        table1.getColumnModel().getColumn(7).setMinWidth(0);
+        table1.getColumnModel().getColumn(7).setMaxWidth(0);
+        table1.getColumnModel().getColumn(7).setWidth(0);
+        
+        table1.getColumnModel().getColumn(8).setMinWidth(0);
+        table1.getColumnModel().getColumn(8).setMaxWidth(0);
+        table1.getColumnModel().getColumn(8).setWidth(0);
+        
+    }
+    
+    public void combox() {
+        try {
+            ResultSet result = animeDAO.obtenerDirectores();
+            ResultSet result2 = animeDAO.obtenerEstudios();
+            ResultSet result3 = categoriaDAO.obtenerNombresCategorias();
+            ResultSet result4 = generoDAO.obtenerNombresGeneros();
+
+            jComboBox1.removeAllItems();
+            jComboBox1.addItem("Elija uno");
+
+            jComboBox2.removeAllItems();
+            jComboBox2.addItem("Elija uno");
+
+            jComboBox3.removeAllItems();
+            jComboBox3.addItem("Elija uno");
+
+            jComboBox4.removeAllItems();
+            jComboBox4.addItem("Elija uno");
+
+            while (result.next()) {
+                jComboBox1.addItem(result.getString(1));
             }
+
+            while (result2.next()) {
+                jComboBox2.addItem(result2.getString(1));
+            }
+
+            while (result3.next()) {
+                jComboBox3.addItem(result3.getString(1));
+            }
+
+            while (result4.next()) {
+                jComboBox4.addItem(result4.getString(1));
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return "Usuario no encontrado";
     }
     
-    public void actualizarTable(Connection con)
-    {
-        
-        
-       DefaultTableModel tm = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-
-            @Override
-            public Class getColumnClass(int columnIndex) {
-                switch (columnIndex) {
-                   
-                        case 7:
-                        return ImageIcon.class;
-                        
-                        case 8:
-                        return ImageIcon.class;
-                        
-                        case 9:
-                        return ImageIcon.class;
-                    default:
-                        return Object.class;
-                }
-            }
-        };
-        
-        
-        
-        tm.addColumn("Nombre");
-        tm.addColumn("Año");
-        tm.addColumn("Director");
-        tm.addColumn("Estudio");
-        tm.addColumn("Categoria");
-        tm.addColumn("Genero");
-        tm.addColumn("ID Anime");
-        tm.addColumn("Detalles");
-        tm.addColumn("Modificar");
-        tm.addColumn("Borrar");
-       
-        table1.setModel(tm);
-        
-        
-        Object [] datos = new Object[50];
-     
-
-        try
-        {   
-            
-            
-            
-            String sql = "SELECT DISTINCT A.NOMBRE, A.ANYO , A.DIRECTOR ,A.ESTUDIO , C.NOMBRE , G.NOMBRE, A.ANIME_ID "
-                    + "FROM Anime A, Categoria C, Genero G "+
-            "WHERE A.ID_CATEGORIA = C.CATEGORIA_ID AND A.ID_GENERO = G.GENERO_ID " ;
-            Statement lee= con.createStatement();
-            ResultSet resultado = lee.executeQuery(sql);
-            
-            while(resultado.next())
-            {
-                datos[0]=resultado.getString(1);
-                datos[1]=resultado.getInt(2);
-                datos[2]=resultado.getString(3);
-                datos[3]=resultado.getString(4);
-                datos[4]=resultado.getString(5);
-                datos[5]=resultado.getString(6);
-                datos[6]=resultado.getInt(7);
-                datos[7] = new ImageIcon(getClass().getResource("/imagenes/File-Text.jpg"));
-                datos[8] = new ImageIcon(getClass().getResource("/imagenes/contract_edit.png"));
-                datos[9] = new ImageIcon(getClass().getResource("/imagenes/delete.png"));
-                
-                
-                tm.addRow(datos);
-            }           
-            table1.setModel(tm);
-            
-            table1.getColumnModel().getColumn(6).setMaxWidth(0);
-            table1.getColumnModel().getColumn(6).setMinWidth(0);
-            table1.getColumnModel().getColumn(6).setPreferredWidth(0);
-
-        }
-        catch(Exception e){
-        e.printStackTrace();}
-
-    }
     
-    public void combox()
-    {
-         try{
-        
-            ResultSet result = null;
-            String sqlC="SELECT DISTINCT DIRECTOR from Anime";
-            Statement stmt = conexion.createStatement();
-            result=stmt.executeQuery(sqlC);
-            
-            
-            jComboBox1.removeAllItems();
-            jComboBox1.addItem("Elija uno");
-            
-            ResultSet result2 = null;
-            String sqlC2="SELECT DISTINCT ESTUDIO from Anime";
-            Statement stmt2 = conexion.createStatement();
-            result2=stmt2.executeQuery(sqlC2);
-            
-            
-            jComboBox2.removeAllItems();
-            jComboBox2.addItem("Elija uno");
-            
-            ResultSet result3 = null;
-            String sqlC3="SELECT DISTINCT NOMBRE from Categoria";
-            Statement stmt3 = conexion.createStatement();
-            result3=stmt3.executeQuery(sqlC3);
-            
-            
-            jComboBox3.removeAllItems();
-            jComboBox3.addItem("Elija uno");
-            
-            ResultSet result4 = null;
-            String sqlC4="SELECT DISTINCT NOMBRE from Genero";
-            Statement stmt4 = conexion.createStatement();
-            result4=stmt4.executeQuery(sqlC4);
-            
-            
-            jComboBox4.removeAllItems();
-            jComboBox4.addItem("Elija uno");
-            
-            
-            while(result.next())
-            {
-                jComboBox1.addItem(result.getString(1));
-               
-                
-            }
-            
-           while(result2.next())
-            {
-                jComboBox2.addItem(result2.getString(1));
-                
-                
-            }
-           while(result3.next())
-            {
-                jComboBox3.addItem(result3.getString(1));
-               
-                
-            }
-           while(result4.next())
-            {
-                jComboBox4.addItem(result4.getString(1));
-               
-                
-            }
-           
-            
-        }catch(Exception e){}
-    }
-    
-    public void Reiniciar(){
-       
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jComboBox1.setSelectedIndex(0);
-        jComboBox2.setSelectedIndex(0);
-        jComboBox3.setSelectedIndex(0);
-        jComboBox4.setSelectedIndex(0);
-        actualizarTable(conexion);
-     }
-   
-    public void Filtrar() {
-        
-    DefaultTableModel tm = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-
-            @Override
-            public Class getColumnClass(int columnIndex) {
-                switch (columnIndex) {
-                   
-                         case 7:
-                        return ImageIcon.class;
-                    default:
-                        return Object.class;
-                }
-            }
-        };
-
-    StringBuilder condicion = new StringBuilder();
-
-    if (jComboBox1.getSelectedIndex() > 0) {
-        condicion.append("A.DIRECTOR = '").append(jComboBox1.getSelectedItem()).append("'");
-    }
-
-    if (jComboBox2.getSelectedIndex() > 0) {
-        if (condicion.length() > 0) {
-            condicion.append(" AND ");
-        }
-        condicion.append("A.ESTUDIO = '").append(jComboBox2.getSelectedItem()).append("'");
-    }
-    if (jComboBox3.getSelectedIndex() > 0) {
-        if (condicion.length() > 0) {
-            condicion.append(" AND ");
-        }
-        condicion.append("C.NOMBRE = '").append(jComboBox3.getSelectedItem()).append("'");
-    }
-    if (jComboBox4.getSelectedIndex() > 0) {
-        if (condicion.length() > 0) {
-            condicion.append(" AND ");
-        }
-        condicion.append("G.NOMBRE = '").append(jComboBox4.getSelectedItem()).append("'");
-    }
-
-    if (!jTextField1.getText().isEmpty()) {
-        if (condicion.length() > 0) {
-            condicion.append(" AND ");
-        }
-        condicion.append("A.NOMBRE LIKE '%").append(jTextField1.getText()).append("%'");
-    }
-    if (!jTextField2.getText().isEmpty()) {
-        if (condicion.length() > 0) {
-            condicion.append(" AND ");
-        }
-        condicion.append("A.ANYO LIKE '%").append(jTextField2.getText()).append("%'");
-    }
-        
-        String clausula = condicion.toString();
-
-        
-       String consultaSQL = "SELECT DISTINCT A.NOMBRE, A.ANYO , A.DIRECTOR ,A.ESTUDIO , C.NOMBRE , G.NOMBRE , A.ANIME_ID  FROM Anime A, Categoria C, Genero G "+
-            "WHERE A.ID_CATEGORIA = C.CATEGORIA_ID AND A.ID_GENERO = G.GENERO_ID" +(clausula.isEmpty() ? "" : " AND " + clausula);
-        
-       System.out.println(consultaSQL);
-       
-   
-        tm.addColumn("Nombre");
-        tm.addColumn("Año");
-        tm.addColumn("Director");
-        tm.addColumn("Estudio");
-        tm.addColumn("Categoria");
-        tm.addColumn("Genero");
-        tm.addColumn("ID Anime");
-        tm.addColumn("Detalles");
-        tm.addColumn("Modificar");
-        tm.addColumn("Borrar");
-        
-        
-        table1.setModel(tm);
-        
-        
-        Object [] datos = new Object[50];
-        
-     
-                
-        
-        try
-        {   
-         
-            Statement lee= conexion.createStatement();
-            ResultSet resultado = lee.executeQuery(consultaSQL);
-            
-            while(resultado.next())
-            {
-                datos[0]=resultado.getString(1);
-                datos[1]=resultado.getInt(2);
-                datos[2]=resultado.getString(3);
-                datos[3]=resultado.getString(4);
-                datos[4]=resultado.getString(5);
-                datos[5]=resultado.getString(6);
-                datos[6]=resultado.getInt(7);
-                datos[7] = new ImageIcon(getClass().getResource("/imagenes/File-Text.jpg"));
-                datos[8] = new ImageIcon(getClass().getResource("/imagenes/contract_edit.png"));
-                datos[9] = new ImageIcon(getClass().getResource("/imagenes/delete.png"));
-                
-                tm.addRow(datos);
-            }           
-            table1.setModel(tm);
-            
-            table1.getColumnModel().getColumn(6).setMaxWidth(0);
-            table1.getColumnModel().getColumn(6).setMinWidth(0);
-            table1.getColumnModel().getColumn(6).setPreferredWidth(0);
-            
-        }
-        catch(Exception e){
-        
-        e.printStackTrace();}
-        
-        
-       
-    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -568,10 +316,14 @@ public class Admin extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void table1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table1MouseClicked
         // TODO add your handling code here:
+        
+        
+        
         int fila = table1.getSelectedRow();
         
         
@@ -580,20 +332,34 @@ public class Admin extends javax.swing.JFrame {
         
         jComboBox1.setSelectedItem(table1.getValueAt(fila, 2));
         jComboBox2.setSelectedItem(table1.getValueAt(fila, 3));
-
+        jComboBox3.setSelectedItem(table1.getValueAt(fila, 4));
+        jComboBox4.setSelectedItem(table1.getValueAt(fila, 5));
+        
         
 
-
-        if (table1.getSelectedColumn()==7){
+        if (table1.getSelectedColumn()==9){
             int codAnime = (int) table1.getValueAt(fila, 6);
             System.out.println(codAnime); 
             
             int idUsuario = obtenerIdUsuario();
             System.out.println(idUsuario); 
-        
-            Animes A = new Animes(idUsuario,codAnime);
+            
+            Animes A = new Animes( idUsuario,codAnime);
             A.setVisible(true);
         }
+        
+        if (table1.getSelectedColumn()==10){
+            int codAnime = (int) table1.getValueAt(fila, 6);
+            System.out.println(codAnime); 
+            
+            int idUsuario = obtenerIdUsuario();
+            System.out.println(idUsuario); 
+            
+            Modificar A = new Modificar( idUsuario,codAnime);
+            A.setVisible(true);
+            
+        }
+            
     }//GEN-LAST:event_table1MouseClicked
 
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
@@ -602,12 +368,38 @@ public class Admin extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        Reiniciar();
+        jTextField1.setText("");
+        jTextField2.setText("");
+        jComboBox1.setSelectedIndex(0);
+        jComboBox2.setSelectedIndex(0);
+        jComboBox3.setSelectedIndex(0);
+        jComboBox4.setSelectedIndex(0);
+        actualizarTable();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        Filtrar();
+         AnimeTableModel model = new AnimeTableModel();
+        List<Anime> animes = animeDAO.filtrarAnime(jComboBox1.getSelectedItem().toString(), 
+                                                   jComboBox2.getSelectedItem().toString(), 
+                                                   jComboBox3.getSelectedItem().toString(), 
+                                                   jComboBox4.getSelectedItem().toString(), 
+                                                   jTextField1.getText(), 
+                                                   jTextField2.getText());
+        model.setAnimes(animes);
+        table1.setModel(model);
+        
+        table1.getColumnModel().getColumn(6).setMinWidth(0);
+        table1.getColumnModel().getColumn(6).setMaxWidth(0);
+        table1.getColumnModel().getColumn(6).setWidth(0);
+        
+        table1.getColumnModel().getColumn(7).setMinWidth(0);
+        table1.getColumnModel().getColumn(7).setMaxWidth(0);
+        table1.getColumnModel().getColumn(7).setWidth(0);
+        
+        table1.getColumnModel().getColumn(8).setMinWidth(0);
+        table1.getColumnModel().getColumn(8).setMaxWidth(0);
+        table1.getColumnModel().getColumn(8).setWidth(0);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed

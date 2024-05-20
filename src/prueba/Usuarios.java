@@ -86,6 +86,14 @@ public class Usuarios extends javax.swing.JFrame {
         table1.getColumnModel().getColumn(8).setMaxWidth(0);
         table1.getColumnModel().getColumn(8).setWidth(0);
         
+        table1.getColumnModel().getColumn(10).setMinWidth(0);
+        table1.getColumnModel().getColumn(10).setMaxWidth(0);
+        table1.getColumnModel().getColumn(10).setWidth(0);
+        
+        table1.getColumnModel().getColumn(11).setMinWidth(0);
+        table1.getColumnModel().getColumn(11).setMaxWidth(0);
+        table1.getColumnModel().getColumn(11).setWidth(0);
+        
     }
     
     public void combox() {
@@ -324,6 +332,7 @@ public class Usuarios extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -357,6 +366,14 @@ public class Usuarios extends javax.swing.JFrame {
         table1.getColumnModel().getColumn(8).setMinWidth(0);
         table1.getColumnModel().getColumn(8).setMaxWidth(0);
         table1.getColumnModel().getColumn(8).setWidth(0);
+        
+        table1.getColumnModel().getColumn(10).setMinWidth(0);
+        table1.getColumnModel().getColumn(10).setMaxWidth(0);
+        table1.getColumnModel().getColumn(10).setWidth(0);
+        
+        table1.getColumnModel().getColumn(11).setMinWidth(0);
+        table1.getColumnModel().getColumn(11).setMaxWidth(0);
+        table1.getColumnModel().getColumn(11).setWidth(0);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

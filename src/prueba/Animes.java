@@ -48,6 +48,7 @@ public class Animes extends javax.swing.JFrame {
         initComponents();
         this.codAnime = codAnime; // Almacena la identificación del anime
         System.out.println(codAnime);
+        
         this.idUsuario = idUsuario;
         System.out.println(idUsuario);
   
@@ -100,9 +101,22 @@ public class Animes extends javax.swing.JFrame {
         table1.getColumnModel().getColumn(1).setMaxWidth(0);
         table1.getColumnModel().getColumn(1).setWidth(0);
         
+        String nombreUsuario = usuarioDAO.obtenerNombreUsuario(idUsuario);
+
+        if (!"admin".equalsIgnoreCase(nombreUsuario)) {
+        // Ocultar las columnas 6 y 7 si el usuario no es administrador
+        table1.getColumnModel().getColumn(6).setMinWidth(0);
+        table1.getColumnModel().getColumn(6).setMaxWidth(0);
+        table1.getColumnModel().getColumn(6).setWidth(0);
+
+        table1.getColumnModel().getColumn(7).setMinWidth(0);
+        table1.getColumnModel().getColumn(7).setMaxWidth(0);
+        table1.getColumnModel().getColumn(7).setWidth(0);
+        
+        
        
+        }
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -273,6 +287,7 @@ public class Animes extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed

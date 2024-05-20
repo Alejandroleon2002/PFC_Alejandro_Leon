@@ -92,5 +92,89 @@ public class GeneroDAO {
         PreparedStatement ps = con.prepareStatement(sql);
         return ps.executeQuery();
     }
+    
+    public List<Genero> obtenerTodosLosGeneros() {
+        List<Genero> generos = new ArrayList<>();
+        String sql = "SELECT * FROM Genero";
+
+        try (Connection con = Conexion.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Genero genero = new Genero();
+                genero.setGeneroId(rs.getInt("genero_id"));
+                genero.setNombre(rs.getString("nombre"));
+                generos.add(genero);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return generos;
+    }
+    
+    public List<Genero> obtenerGenerosPorAnime(int codAnime) {
+        List<Genero> generos = new ArrayList<>();
+        String sql = "SELECT g.* FROM Genero g INNER JOIN AnimeGenero ag ON g.genero_id = ag.genero_id WHERE ag.anime_id = ?";
+        
+        try (Connection con = Conexion.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, codAnime);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Genero genero = new Genero();
+                    genero.setGeneroId(rs.getInt("genero_id"));
+                    genero.setNombre(rs.getString("nombre"));
+                    generos.add(genero);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return generos;
+    }
+    
+    
+    public Genero obtenerGeneroPorId(int id) {
+    Genero genero = null;
+    String sql = "SELECT * FROM Genero WHERE genero_id = ?";
+    
+    try (Connection con = Conexion.obtenerConexion();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, id);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                genero = new Genero();
+                genero.setGeneroId(rs.getInt("genero_id"));
+                genero.setNombre(rs.getString("nombre"));
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return genero;
+}
+    
+    
+   
+
+    public int obtenerIdGeneroPorNombre(String nombreGenero) {
+    int id = -1;
+    String sql = "SELECT genero_id FROM Genero WHERE nombre = ?";
+    
+    try (Connection con = Conexion.obtenerConexion();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, nombreGenero);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                id = rs.getInt("genero_id");
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    
+    return id;
+}
 }
 

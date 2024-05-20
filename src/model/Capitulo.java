@@ -4,6 +4,8 @@
  */
 package model;
 
+import java.util.List;
+
 /**
  *
  * @author Usuario
@@ -14,6 +16,8 @@ public class Capitulo {
     private int numeroCapitulo;
     private String titulo;
     private int duracion;
+    private Anime anime;
+    private List<Comentario> comentarios;
 
     public int getCapituloId() {
         return capituloId;
@@ -53,6 +57,22 @@ public class Capitulo {
 
     public void setDuracion(int duracion) {
         this.duracion = duracion;
+    }
+    
+    public Anime getAnime() {
+        return anime;
+    }
+
+    public void setAnime(Anime anime) {
+        this.anime = anime;
+    }
+    
+    public List<Comentario> getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(List<Comentario> comentarios) {
+        this.comentarios = comentarios;
     }
 }
 

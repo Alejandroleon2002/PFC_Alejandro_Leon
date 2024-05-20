@@ -9,6 +9,7 @@ package model;
  * @author Usuario
  */
 import java.util.Date;
+import java.util.List;
 
 public class Comentario {
     private int comentarioId;
@@ -17,6 +18,11 @@ public class Comentario {
     private int idAnime;
     private String comentario;
     private Date fechaComentario;
+    
+     private Anime anime;
+    private List<Comentario> comentarios;
+    
+    private String nombreUsuario;
 
     public int getComentarioId() {
         return comentarioId;
@@ -64,5 +70,29 @@ public class Comentario {
 
     public void setFechaComentario(Date fechaComentario) {
         this.fechaComentario = fechaComentario;
+    }
+    
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+    
+     public Anime getAnime() {
+        return anime;
+    }
+
+    public void setAnime(Anime anime) {
+        this.anime = anime;
+    }
+
+    public List<Comentario> getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(List<Comentario> comentarios) {
+        this.comentarios = comentarios;
     }
 }

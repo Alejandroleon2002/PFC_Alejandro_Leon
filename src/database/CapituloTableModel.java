@@ -21,13 +21,17 @@ public class CapituloTableModel extends AbstractTableModel {
         switch (columnIndex) {
             case 5:
                 return ImageIcon.class;
+                case 6:
+                return ImageIcon.class;
+                case 7:
+                return ImageIcon.class;
             default:
                 return Object.class;
         }
     }
     
     private List<Capitulo> capitulos;
-    private final String[] columnNames = {"ID Capítulo", "ID Anime", "Número del Capítulo", "Título", "Duración", "Comentar"};
+    private final String[] columnNames = {"ID Capítulo", "ID Anime", "Número del Capítulo", "Título", "Duración", "Comentar","Modificar","Eliminar"};
 
     public void setCapitulos(List<Capitulo> capitulos) {
         this.capitulos = capitulos;
@@ -59,6 +63,8 @@ public class CapituloTableModel extends AbstractTableModel {
             case 3: return capitulo.getTitulo();
             case 4: return capitulo.getDuracion();
             case 5: return new ImageIcon(getClass().getResource("/imagenes/File-Text.jpg"));
+            case 6: return new ImageIcon(getClass().getResource("/imagenes/editar.jpg"));
+            case 7: return new ImageIcon(getClass().getResource("/imagenes/papelera.jpg"));
             default: return null;
         }
     }

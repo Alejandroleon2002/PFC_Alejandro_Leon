@@ -4,109 +4,110 @@
  */
 package prueba;
 
+import database.AnimeDAO;
+import database.CapituloDAO;
+import database.UsuarioDAO;
 import java.awt.GridLayout;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import model.Capitulo;
+import model.Comentario;
 
 public class Capitulos extends javax.swing.JFrame {
-
-    private Connection conexion;
-    private String bbdd = "jdbc:hsqldb:hsql://localhost/";
+    
+    private UsuarioDAO usuarioDAO;
+    private AnimeDAO animeDAO;
+    private CapituloDAO capituloDAO;
+    private int idUsuario;
+    private int codAnime;
+    private int codCap;
 
     public Capitulos() {
         initComponents();
+        usuarioDAO = new UsuarioDAO();
+        animeDAO = new AnimeDAO();
+        capituloDAO = new CapituloDAO();
     }
 
     public Capitulos(int idUsuario,int codCap, int codAnime) {
-        initComponents();
-        System.out.println(codAnime);
-        try {
-            Class.forName("org.hsqldb.jdbc.JDBCDriver");
-            conexion = DriverManager.getConnection(bbdd, "SA", "SA");
-            if (conexion != null) {
-                System.out.println("Conexión creada exitosamente");
-            } else {
-                System.out.println("Problema al crear la conexión");
-            }
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace(System.out);
-        }
-
-        obtenerInformacionAnime(codCap, codAnime);
+        
+        
+        this();
+        this.idUsuario = idUsuario;
+        this.codAnime = codAnime;
+        this.codCap = codCap;
+        mostrarInformacionCapitulo();
     }
 
-    private void obtenerInformacionAnime(int codCap, int codAnime) {
-    try {
-        // Realiza una consulta SQL para obtener la información del anime y del capítulo usando sus IDs
-        String sql = "SELECT A.nombre AS nombre_anime, C.numero_capitulo, C.titulo AS titulo_capitulo, C.duracion, Co.comentario, Co.fecha_comentario, U.nombre_usuario " +
-                     "FROM Anime A " +
-                     "INNER JOIN Capitulo C ON A.anime_id = C.anime_id " +
-                     "LEFT JOIN Comentario Co ON C.capitulo_id = Co.capitulo_id " +
-                     "LEFT JOIN Usuario U ON Co.usuario_id = U.usuario_id " +
-                     "WHERE A.anime_id = ? AND C.capitulo_id = ?";
-        PreparedStatement statement = conexion.prepareStatement(sql);
-        statement.setInt(1, codAnime);
-        statement.setInt(2, codCap);
-        ResultSet resultSet = statement.executeQuery();
-
-        // Si se encuentra un resultado, muestra la información en los labels
-        if (resultSet.next()) {
-            lblNombre.setText(resultSet.getString("nombre_anime"));
-            lblNumeroCapitulo.setText(String.valueOf(resultSet.getInt("numero_capitulo")));
-            lblTituloCapitulo.setText(resultSet.getString("titulo_capitulo"));
-            lblDuracion.setText(String.valueOf(resultSet.getInt("duracion")));
+    private void mostrarInformacionCapitulo() {
+        Capitulo capitulo = capituloDAO.obtenerCapituloPorId(codCap, codAnime); // Obtiene el capítulo por su identificación
+        if (capitulo != null) {
+            lblNombre.setText(capitulo.getAnime().getNombre());
+            lblNumeroCapitulo.setText(String.valueOf(capitulo.getNumeroCapitulo()));
+            lblTituloCapitulo.setText(capitulo.getTitulo());
+            lblDuracion.setText(String.valueOf(capitulo.getDuracion()));
             
-            // Limpia el panel de comentarios antes de agregar nuevos comentarios
-            panelComentarios.removeAll();
-            panelComentarios.setLayout(new BoxLayout(panelComentarios, BoxLayout.Y_AXIS));
-
-            // Variable para verificar si es el primer comentario
-            boolean primerComentario = true;
-
-            // Recorre los resultados y agrega cada comentario al panel
-            do {
-                // Si no es el primer comentario, agrega un espacio en blanco
-                if (!primerComentario) {
-                    panelComentarios.add(Box.createVerticalStrut(10)); // Espacio vertical
-                } else {
-                    primerComentario = false;
-                }
-
-                String usuarioFecha = resultSet.getString("nombre_usuario") != null ? resultSet.getString("nombre_usuario") + " - " + resultSet.getString("fecha_comentario") : "";
-                String comentario = resultSet.getString("comentario");
-                // Verifica si el comentario es null, y si lo es, establece una cadena vacía
-                if (comentario == null) {
-                    comentario = "";
-                }
-
-                // Crea un panel para contener el nombre de usuario y la fecha
-                JPanel panelUsuarioFecha = new JPanel();
-                panelUsuarioFecha.setLayout(new BoxLayout(panelUsuarioFecha, BoxLayout.X_AXIS));
-                panelUsuarioFecha.add(new JLabel(usuarioFecha));
-
-                // Crea un label para el comentario
-                JLabel labelComentario = new JLabel(comentario);
-
-                // Agrega el panel con el nombre de usuario y la fecha, y el label del comentario al panel principal
-                panelComentarios.add(panelUsuarioFecha);
-                panelComentarios.add(labelComentario);
-            } while (resultSet.next());
+            // Muestra los comentarios
+            mostrarComentarios(capitulo.getComentarios());
+        } else {
+            // Manejar el caso en que no se encuentre el capítulo
+            System.out.println("El capítulo no se encontró en la base de datos.");
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
     }
-}
+    
 
+    private void mostrarComentarios(List<Comentario> comentarios) {
+        panelComentarios.removeAll();
+        panelComentarios.setLayout(new BoxLayout(panelComentarios, BoxLayout.Y_AXIS));
 
+        // Variable para verificar si es el primer comentario
+        boolean primerComentario = true;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+        // Recorre los comentarios y agrega cada uno al panel
+        for (Comentario comentario : comentarios) {
+            // Si no es el primer comentario, agrega un espacio en blanco
+            if (!primerComentario) {
+                panelComentarios.add(Box.createVerticalStrut(10)); // Espacio vertical
+            } else {
+                primerComentario = false;
+            }
+
+            String usuarioFecha = comentario.getNombreUsuario() != null ? 
+                comentario.getNombreUsuario() + " - " + dateFormat.format(comentario.getFechaComentario()) : "";
+            String comentarioTexto = comentario.getComentario();
+            // Verifica si el comentario es null, y si lo es, establece una cadena vacía
+            if (comentarioTexto == null) {
+                comentarioTexto = "";
+            }
+
+            // Crea un panel para contener el nombre de usuario y la fecha
+            JPanel panelUsuarioFecha = new JPanel();
+            panelUsuarioFecha.setLayout(new BoxLayout(panelUsuarioFecha, BoxLayout.X_AXIS));
+            panelUsuarioFecha.add(new JLabel(usuarioFecha));
+
+            // Crea un label para el comentario
+            JLabel labelComentario = new JLabel(comentarioTexto);
+
+            // Agrega el panel con el nombre de usuario y la fecha, y el label del comentario al panel principal
+            panelComentarios.add(panelUsuarioFecha);
+            panelComentarios.add(labelComentario);
+        }
+
+        // Refresca el panel de comentarios
+        panelComentarios.revalidate();
+        panelComentarios.repaint();
+    }
 
 
     /**
@@ -226,6 +227,7 @@ public class Capitulos extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     /**

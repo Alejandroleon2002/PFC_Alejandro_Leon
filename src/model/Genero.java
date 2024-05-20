@@ -19,6 +19,10 @@ public class Genero {
     public Genero(String nombre) {
         this.nombre = nombre;
     }
+    public Genero(int generoId, String nombre) {
+        this.generoId = generoId;
+        this.nombre = nombre;
+    }
 
     public int getGeneroId() {
         return generoId;
@@ -34,6 +38,10 @@ public class Genero {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+    @Override
+    public String toString() {
+        return nombre;
     }
 }
 

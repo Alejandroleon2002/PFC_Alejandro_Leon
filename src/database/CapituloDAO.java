@@ -10,7 +10,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import model.Anime;
 import model.Capitulo;
+import model.Comentario;
 import prueba.Conexion;
 
 public class CapituloDAO {
@@ -56,7 +58,65 @@ public class CapituloDAO {
         
         return capitulos;
     }
+    
+   public Capitulo obtenerCapituloPorId(int codCap, int codAnime) {
+        String sql = "SELECT A.nombre AS nombre_anime, C.numero_capitulo, C.titulo AS titulo_capitulo, C.duracion " +
+                     "FROM Anime A " +
+                     "INNER JOIN Capitulo C ON A.anime_id = C.anime_id " +
+                     "WHERE A.anime_id = ? AND C.capitulo_id = ?";
+        
+        try (Connection con = Conexion.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, codAnime);
+            ps.setInt(2, codCap);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Capitulo capitulo = new Capitulo();
+                    capitulo.setNumeroCapitulo(rs.getInt("numero_capitulo"));
+                    capitulo.setTitulo(rs.getString("titulo_capitulo"));
+                    capitulo.setDuracion(rs.getInt("duracion"));
+                    
+                    Anime anime = new Anime();
+                    anime.setNombre(rs.getString("nombre_anime"));
+                    capitulo.setAnime(anime);
+                    
+                    capitulo.setComentarios(obtenerComentariosPorCapitulo(codCap)); // Agrega los comentarios
+                     
+                    return capitulo;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
+   public List<Comentario> obtenerComentariosPorCapitulo(int codCap) {
+        String sql = "SELECT Co.comentario, Co.fecha_comentario, U.nombre_usuario " +
+                     "FROM Comentario Co " +
+                     "LEFT JOIN Usuario U ON Co.usuario_id = U.usuario_id " +
+                     "WHERE Co.capitulo_id = ?";
+        
+        List<Comentario> comentarios = new ArrayList<>();
+        
+        try (Connection con = Conexion.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, codCap);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Comentario comentario = new Comentario();
+                    comentario.setComentario(rs.getString("comentario"));
+                    comentario.setFechaComentario(rs.getDate("fecha_comentario")); // Ajusta para Date
+                    comentario.setNombreUsuario(rs.getString("nombre_usuario"));
+                    comentarios.add(comentario);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return comentarios;
+    }
+   
     public List<Capitulo> listar() {
         Connection con = null;
         try {
