@@ -71,7 +71,6 @@ public class AnimeDAO {
             anime.setAnyo(rs.getInt("anyo"));
             anime.setDirector(rs.getString("director"));
             anime.setEstudio(rs.getString("estudio"));
-            anime.setImagen(rs.getString("imagen"));
             Categoria categoria = new Categoria();
                 categoria.setNombre(rs.getString("nombre_categoria"));
                 anime.setCategoria(categoria);
@@ -92,7 +91,7 @@ public class AnimeDAO {
    
     public List<Anime> filtrarAnime(String director, String estudio, String categoria, String genero, String nombre, String anyo) {
     List<Anime> animes = new ArrayList<>();
-    StringBuilder sql = new StringBuilder("SELECT A.NOMBRE, A.ANYO, A.DIRECTOR, A.ESTUDIO, C.NOMBRE AS nombre_categoria, G.NOMBRE AS nombre_genero, A.ANIME_ID, A.DESCRIPCION, A.IMAGEN " +
+    StringBuilder sql = new StringBuilder("SELECT A.NOMBRE, A.ANYO, A.DIRECTOR, A.ESTUDIO, C.NOMBRE AS nombre_categoria, G.NOMBRE AS nombre_genero, A.ANIME_ID, A.DESCRIPCION " +
                                           "FROM Anime A " +
                                           "JOIN Categoria C ON A.ID_CATEGORIA = C.CATEGORIA_ID " +
                                           "JOIN Genero G ON A.ID_GENERO = G.GENERO_ID " +
@@ -157,7 +156,6 @@ public class AnimeDAO {
                 anime.setGenero(new Genero(rs.getString(6))); // Usamos el constructor adecuado de Genero
                 anime.setIdAnime(rs.getInt(7));
                 anime.setDescripcion(rs.getString(8));
-                anime.setImagen(rs.getString(9)); // Asigna el valor de la imagen
                 animes.add(anime);
             }
         }
@@ -170,7 +168,7 @@ public class AnimeDAO {
    
    
     public boolean guardar(Anime anime) {
-        String sql = "INSERT INTO anime (nombre, descripcion, anyo, director, estudio, imagen, id_categoria, id_genero) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO anime (nombre, descripcion, anyo, director, estudio,  id_categoria, id_genero) VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection con = Conexion.obtenerConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -180,9 +178,8 @@ public class AnimeDAO {
             ps.setInt(3, anime.getAnyo());
             ps.setString(4, anime.getDirector());
             ps.setString(5, anime.getEstudio());
-            ps.setString(6, anime.getImagen());
-            ps.setInt(7, anime.getCategoria().getCategoriaId());
-            ps.setInt(8, anime.getGenero().getGeneroId());
+            ps.setInt(6, anime.getCategoria().getCategoriaId());
+            ps.setInt(7, anime.getGenero().getGeneroId());
             
             int filasInsertadas = ps.executeUpdate();
             return filasInsertadas == 1;
@@ -217,7 +214,7 @@ public class AnimeDAO {
 }
 
     public boolean actualizar(Anime anime) {
-        String sql = "UPDATE anime SET nombre = ?, descripcion = ?, anyo = ?, director = ?, estudio = ?, imagen = ?, id_categoria = ?, id_genero = ? WHERE anime_id = ?";
+        String sql = "UPDATE anime SET nombre = ?, descripcion = ?, anyo = ?, director = ?, estudio = ?, id_categoria = ?, id_genero = ? WHERE anime_id = ?";
         
         try (Connection con = Conexion.obtenerConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -227,10 +224,9 @@ public class AnimeDAO {
             ps.setInt(3, anime.getAnyo());
             ps.setString(4, anime.getDirector());
             ps.setString(5, anime.getEstudio());
-            ps.setString(6, anime.getImagen());
-            ps.setInt(7, anime.getCategoria().getCategoriaId());
-            ps.setInt(8, anime.getGenero().getGeneroId());
-            ps.setInt(9, anime.getIdAnime());
+            ps.setInt(6, anime.getCategoria().getCategoriaId());
+            ps.setInt(7, anime.getGenero().getGeneroId());
+            ps.setInt(8, anime.getIdAnime());
             
             int filasActualizadas = ps.executeUpdate();
             return filasActualizadas == 1;
@@ -240,6 +236,40 @@ public class AnimeDAO {
         }
     }
 
+    public boolean eliminarAnime(int idAnime) {
+    String sqlMeGusta = "DELETE FROM MeGusta WHERE anime_id = ?";
+    String sqlComentarios = "DELETE FROM Comentario WHERE anime_id = ?";
+    String sqlCapitulos = "DELETE FROM Capitulo WHERE anime_id = ?";
+    String sqlAnime = "DELETE FROM Anime WHERE anime_id = ?";
+
+    try (Connection con = Conexion.obtenerConexion();
+         PreparedStatement psMeGusta = con.prepareStatement(sqlMeGusta);
+         PreparedStatement psComentarios = con.prepareStatement(sqlComentarios);
+         PreparedStatement psCapitulos = con.prepareStatement(sqlCapitulos);
+         PreparedStatement psAnime = con.prepareStatement(sqlAnime)) {
+
+        // Eliminar las filas en MeGusta asociadas
+        psMeGusta.setInt(1, idAnime);
+        psMeGusta.executeUpdate();
+
+        // Eliminar los comentarios asociados
+        psComentarios.setInt(1, idAnime);
+        psComentarios.executeUpdate();
+
+        // Eliminar los capítulos asociados
+        psCapitulos.setInt(1, idAnime);
+        psCapitulos.executeUpdate();
+
+        // Eliminar el anime
+        psAnime.setInt(1, idAnime);
+        int rowsAffected = psAnime.executeUpdate();
+        return rowsAffected > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+    
     public boolean eliminar(int animeId) {
         String sql = "DELETE FROM anime WHERE anime_id = ?";
         

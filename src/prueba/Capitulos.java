@@ -7,6 +7,7 @@ package prueba;
 import database.AnimeDAO;
 import database.CapituloDAO;
 import database.UsuarioDAO;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -31,12 +32,15 @@ public class Capitulos extends javax.swing.JFrame {
     private int idUsuario;
     private int codAnime;
     private int codCap;
+    private JScrollPane scrollPaneles;
 
     public Capitulos() {
         initComponents();
         usuarioDAO = new UsuarioDAO();
         animeDAO = new AnimeDAO();
         capituloDAO = new CapituloDAO();
+        
+        
     }
 
     public Capitulos(int idUsuario,int codCap, int codAnime) {
@@ -47,7 +51,10 @@ public class Capitulos extends javax.swing.JFrame {
         this.codAnime = codAnime;
         this.codCap = codCap;
         mostrarInformacionCapitulo();
+        
+    
     }
+    
 
     private void mostrarInformacionCapitulo() {
         Capitulo capitulo = capituloDAO.obtenerCapituloPorId(codCap, codAnime); // Obtiene el capítulo por su identificación
@@ -108,6 +115,26 @@ public class Capitulos extends javax.swing.JFrame {
         panelComentarios.revalidate();
         panelComentarios.repaint();
     }
+    
+    private void comentarCapitulo(String comentarioTexto) {
+    // Verificar si el texto del comentario no está vacío
+    if (!comentarioTexto.isEmpty()) {
+        // Crear un nuevo comentario con el texto proporcionado y el ID del usuario
+        Comentario comentario = new Comentario();
+        comentario.setComentario(comentarioTexto);
+        comentario.setUsuarioId(idUsuario);
+
+        // Obtener la fecha actual
+        java.util.Date fechaActual = new java.util.Date();
+        comentario.setFechaComentario(new java.sql.Date(fechaActual.getTime()));
+
+        // Agregar el comentario al capítulo
+        capituloDAO.agregarComentario(codCap, codAnime, comentario);
+
+        // Actualizar la visualización de comentarios
+        mostrarInformacionCapitulo();
+    }
+}
 
 
     /**
@@ -155,9 +182,15 @@ public class Capitulos extends javax.swing.JFrame {
         jLabel6.setText("Comentarios:");
 
         panelComentarios.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        panelComentarios.setMinimumSize(new java.awt.Dimension(300, 160));
         panelComentarios.setLayout(new java.awt.GridBagLayout());
 
         jButton1.setText("Publicar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -178,16 +211,19 @@ public class Capitulos extends javax.swing.JFrame {
                             .addComponent(lblNumeroCapitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblTituloCapitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel6)
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(panelComentarios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE))
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
                                 .addGap(37, 37, 37)
-                                .addComponent(jButton1)))))
+                                .addComponent(jButton1))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel6))))))
                 .addGap(147, 147, 147))
         );
         layout.setVerticalGroup(
@@ -218,17 +254,24 @@ public class Capitulos extends javax.swing.JFrame {
                         .addGap(20, 20, 20)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel3)
-                            .addComponent(lblDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addComponent(lblDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(panelComentarios, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
-                        .addGap(47, 47, 47))))
+                        .addComponent(panelComentarios, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String textoComentario = areaComentario.getText();
+    
+    // Llamar al método comentarCapitulo para agregar el comentario
+    comentarCapitulo(textoComentario);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments

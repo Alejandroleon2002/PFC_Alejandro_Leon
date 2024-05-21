@@ -17,6 +17,7 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.List;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.Anime;
 
@@ -31,6 +32,7 @@ public class Admin extends javax.swing.JFrame {
     private AnimeDAO animeDAO;
     private CategoriaDAO categoriaDAO;
     private GeneroDAO generoDAO;
+    private int codAnime;
   
     /**
      * Creates new form Principal
@@ -42,7 +44,22 @@ public class Admin extends javax.swing.JFrame {
         categoriaDAO = new CategoriaDAO();
         generoDAO = new GeneroDAO();
     }
-    
+    /*
+    public Admin(int id,int codAnime) {
+        
+        
+        this.codAnime = codAnime;
+        
+        this.idUsuario = id;
+        System.out.println(id);
+        
+        String nombreUsuario = usuarioDAO.obtenerNombreUsuario(id);
+        System.out.println("Nombre de usuario obtenido: " + nombreUsuario);
+        lblNombreUsuario.setText(nombreUsuario);
+        
+       
+    }
+    */
     public Admin(int id) {
         
         this();
@@ -76,9 +93,7 @@ public class Admin extends javax.swing.JFrame {
         table1.getColumnModel().getColumn(7).setMaxWidth(0);
         table1.getColumnModel().getColumn(7).setWidth(0);
         
-        table1.getColumnModel().getColumn(8).setMinWidth(0);
-        table1.getColumnModel().getColumn(8).setMaxWidth(0);
-        table1.getColumnModel().getColumn(8).setWidth(0);
+        
         
     }
     
@@ -151,6 +166,12 @@ public class Admin extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -219,6 +240,39 @@ public class Admin extends javax.swing.JFrame {
         jLabel1.setText("Nombre:");
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jMenu1.setText("Añadir");
+        jMenu1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenu1MouseClicked(evt);
+            }
+        });
+
+        jMenuItem1.setText("Anime");
+        jMenuItem1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenuItem1MouseClicked(evt);
+            }
+        });
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
+        jMenuItem2.setText("Capítulo");
+        jMenu1.add(jMenuItem2);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Apariencia");
+        jMenuBar1.add(jMenu2);
+
+        jMenu3.setText("Información");
+        jMenuBar1.add(jMenu3);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -308,7 +362,7 @@ public class Admin extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
@@ -337,7 +391,7 @@ public class Admin extends javax.swing.JFrame {
         
         
 
-        if (table1.getSelectedColumn()==9){
+        if (table1.getSelectedColumn()==8){
             int codAnime = (int) table1.getValueAt(fila, 6);
             System.out.println(codAnime); 
             
@@ -348,7 +402,7 @@ public class Admin extends javax.swing.JFrame {
             A.setVisible(true);
         }
         
-        if (table1.getSelectedColumn()==10){
+        if (table1.getSelectedColumn()==9){
             int codAnime = (int) table1.getValueAt(fila, 6);
             System.out.println(codAnime); 
             
@@ -359,6 +413,20 @@ public class Admin extends javax.swing.JFrame {
             A.setVisible(true);
             
         }
+        if (table1.getSelectedColumn() == 10) {
+        int codAnime = (int) table1.getValueAt(fila, 6);
+        
+        int confirm = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que deseas eliminar este anime, sus capítulos y comentarios?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean eliminacionExitosa = animeDAO.eliminarAnime(codAnime);
+            if (eliminacionExitosa) {
+                JOptionPane.showMessageDialog(null, "Anime, sus capítulos, comentarios y 'Me Gusta' eliminados correctamente.");
+                actualizarTable();
+            } else {
+                JOptionPane.showMessageDialog(null, "Error al eliminar el anime, sus capítulos, comentarios y 'Me Gusta'.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
             
     }//GEN-LAST:event_table1MouseClicked
 
@@ -397,14 +465,29 @@ public class Admin extends javax.swing.JFrame {
         table1.getColumnModel().getColumn(7).setMaxWidth(0);
         table1.getColumnModel().getColumn(7).setWidth(0);
         
-        table1.getColumnModel().getColumn(8).setMinWidth(0);
-        table1.getColumnModel().getColumn(8).setMaxWidth(0);
-        table1.getColumnModel().getColumn(8).setWidth(0);
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jMenu1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu1MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jMenu1MouseClicked
+
+    private void jMenuItem1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem1MouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jMenuItem1MouseClicked
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+       
+        Añadir A = new Añadir(  idUsuario);
+            A.setVisible(true);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -456,6 +539,12 @@ public class Admin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;

@@ -17,7 +17,6 @@ public class Anime {
     private Genero genero;
     private int idAnime;
     private String descripcion;
-    private String imagen; // Nuevo atributo para la imagen
     private int idCategoria;
     private int idGenero;
 
@@ -118,11 +117,5 @@ public class Anime {
         this.descripcion = descripcion;
     }
 
-    public String getImagen() {
-        return imagen;
-    }
-
-    public void setImagen(String imagen) {
-        this.imagen = imagen;
-    }
+    
 }

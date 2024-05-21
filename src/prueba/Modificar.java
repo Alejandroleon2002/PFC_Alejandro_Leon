@@ -83,7 +83,9 @@ public class Modificar extends javax.swing.JFrame {
             datoGenero.setSelectedItem(anime.getGenero().getNombre());
         }
     }
-        private void cargarDatosAnime(int codAnime) {
+        
+        
+    private void cargarDatosAnime(int codAnime) {
         Anime anime = animeDAO.obtenerAnimePorId(codAnime);
         if (anime != null) {
             datoNombre.setText(anime.getNombre());
@@ -100,7 +102,6 @@ public class Modificar extends javax.swing.JFrame {
         }
     }
 
-    
     
     private void actualizarDatosAnime(int codAnime) {
     String nombre = datoNombre.getText();

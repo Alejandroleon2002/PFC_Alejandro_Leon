@@ -73,6 +73,7 @@ public class Usuarios extends javax.swing.JFrame {
         model.setAnimes(animes);
         table1.setModel(model);
 
+        
         // Ocultar la columnas
         table1.getColumnModel().getColumn(6).setMinWidth(0);
         table1.getColumnModel().getColumn(6).setMaxWidth(0);
@@ -82,18 +83,15 @@ public class Usuarios extends javax.swing.JFrame {
         table1.getColumnModel().getColumn(7).setMaxWidth(0);
         table1.getColumnModel().getColumn(7).setWidth(0);
         
-        table1.getColumnModel().getColumn(8).setMinWidth(0);
-        table1.getColumnModel().getColumn(8).setMaxWidth(0);
-        table1.getColumnModel().getColumn(8).setWidth(0);
+        table1.getColumnModel().getColumn(9).setMinWidth(0);
+        table1.getColumnModel().getColumn(9).setMaxWidth(0);
+        table1.getColumnModel().getColumn(9).setWidth(0);
         
         table1.getColumnModel().getColumn(10).setMinWidth(0);
         table1.getColumnModel().getColumn(10).setMaxWidth(0);
         table1.getColumnModel().getColumn(10).setWidth(0);
-        
-        table1.getColumnModel().getColumn(11).setMinWidth(0);
-        table1.getColumnModel().getColumn(11).setMaxWidth(0);
-        table1.getColumnModel().getColumn(11).setWidth(0);
-        
+       
+    
     }
     
     public void combox() {
@@ -363,17 +361,15 @@ public class Usuarios extends javax.swing.JFrame {
         table1.getColumnModel().getColumn(7).setMaxWidth(0);
         table1.getColumnModel().getColumn(7).setWidth(0);
         
-        table1.getColumnModel().getColumn(8).setMinWidth(0);
-        table1.getColumnModel().getColumn(8).setMaxWidth(0);
-        table1.getColumnModel().getColumn(8).setWidth(0);
+        table1.getColumnModel().getColumn(9).setMinWidth(0);
+        table1.getColumnModel().getColumn(9).setMaxWidth(0);
+        table1.getColumnModel().getColumn(9).setWidth(0);
         
         table1.getColumnModel().getColumn(10).setMinWidth(0);
         table1.getColumnModel().getColumn(10).setMaxWidth(0);
         table1.getColumnModel().getColumn(10).setWidth(0);
         
-        table1.getColumnModel().getColumn(11).setMinWidth(0);
-        table1.getColumnModel().getColumn(11).setMaxWidth(0);
-        table1.getColumnModel().getColumn(11).setWidth(0);
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -404,7 +400,7 @@ public class Usuarios extends javax.swing.JFrame {
         
         
 
-        if (table1.getSelectedColumn()==9){
+        if (table1.getSelectedColumn()==8){
             int codAnime = (int) table1.getValueAt(fila, 6);
             System.out.println(codAnime); 
             

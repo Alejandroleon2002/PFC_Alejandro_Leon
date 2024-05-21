@@ -5,6 +5,7 @@
 package database;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -142,6 +143,26 @@ public class CapituloDAO {
         }
     }
 
+    public void agregarComentario(int idCapitulo, int idAnime, Comentario comentario) {
+    String sql = "INSERT INTO Comentario (usuario_id, capitulo_id, anime_id, comentario, fecha_comentario) VALUES (?, ?, ?, ?, ?)";
+
+    try (Connection con = Conexion.obtenerConexion();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, comentario.getUsuarioId());
+        ps.setInt(2, idCapitulo);
+        ps.setInt(3, idAnime);
+        ps.setString(4, comentario.getComentario());
+        ps.setDate(5, (Date) comentario.getFechaComentario());
+
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        // Imprimir el mensaje de error
+        System.out.println("Error al agregar comentario: " + e.getMessage());
+        e.printStackTrace(); // Esto imprimirá la traza completa del error
+    }
+}
+   
+    
     public boolean guardar(Capitulo capitulo) {
         Connection con = null;
         try {
