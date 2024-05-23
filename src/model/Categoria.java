@@ -12,6 +12,7 @@ public class Categoria {
     private int categoriaId;
     private String nombre;
     
+    
     public Categoria() {
         // Constructor por defecto
     }

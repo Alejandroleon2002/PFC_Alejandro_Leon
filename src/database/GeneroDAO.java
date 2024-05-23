@@ -86,6 +86,8 @@ public class GeneroDAO {
         }
     }
     
+    
+    
     public ResultSet obtenerNombresGeneros() throws SQLException {
         Connection con = Conexion.obtenerConexion();
         String sql = "SELECT DISTINCT NOMBRE from Genero";
@@ -112,6 +114,24 @@ public class GeneroDAO {
         }
         return generos;
     }
+    
+    public List<Genero> obtenerGeneros() {
+        List<Genero> generos = new ArrayList<>();
+        String sql = "SELECT genero_Id, nombre FROM Genero";
+        try (Connection connection = Conexion.obtenerConexion();
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int id = rs.getInt("genero_Id");
+                String nombre = rs.getString("nombre");
+                generos.add(new Genero(id, nombre));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener géneros: " + e.getMessage());
+        }
+        return generos;
+    }
+    
     
     public List<Genero> obtenerGenerosPorAnime(int codAnime) {
         List<Genero> generos = new ArrayList<>();

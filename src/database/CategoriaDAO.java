@@ -86,6 +86,43 @@ public class CategoriaDAO {
         }
     }
     
+   
+    public List<Categoria> obtenerTodasLasCategorias() {
+        List<Categoria> categorias = new ArrayList<>();
+        String sql = "SELECT id, nombre FROM Categoria";
+        try (Connection connection = Conexion.obtenerConexion();
+             PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                categorias.add(new Categoria(id, nombre));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener categorías: " + e.getMessage());
+        }
+        return categorias;
+    }
+
+    
+    public List<Categoria> obtenerCategorias() {
+    List<Categoria> categorias = new ArrayList<>();
+    String sql = "SELECT categoria_id, nombre FROM Categoria"; // Utiliza "categoria_id" en lugar de "categoriaId"
+    try (Connection connection = Conexion.obtenerConexion();
+         PreparedStatement ps = connection.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            int id = rs.getInt("categoria_id"); // Utiliza "categoria_id" en lugar de "categoriaId"
+            String nombre = rs.getString("nombre");
+            categorias.add(new Categoria(id, nombre));
+        }
+    } catch (SQLException e) {
+        System.out.println("Error al obtener categorías: " + e.getMessage());
+    }
+    return categorias;
+}
+
+    
     public ResultSet obtenerNombresCategorias() throws SQLException {
         Connection con = Conexion.obtenerConexion();
         String sql = "SELECT DISTINCT NOMBRE from Categoria";
@@ -93,25 +130,7 @@ public class CategoriaDAO {
         return ps.executeQuery();
     }
     
-    public List<Categoria> obtenerTodasLasCategorias() {
-        List<Categoria> categorias = new ArrayList<>();
-        String sql = "SELECT * FROM Categoria";
-
-        try (Connection con = Conexion.obtenerConexion();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                Categoria categoria = new Categoria();
-                categoria.setCategoriaId(rs.getInt("categoria_id"));
-                categoria.setNombre(rs.getString("nombre"));
-                categorias.add(categoria);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return categorias;
-    }
+    
     
     public List<Categoria> obtenerCategoriasPorAnime(int codAnime) {
         List<Categoria> categorias = new ArrayList<>();

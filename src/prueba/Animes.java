@@ -11,6 +11,7 @@ import database.CapituloTableModel;
 import database.MeGustaDAO;
 import database.UsuarioDAO;
 import java.awt.Image;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -18,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 import model.Anime;
@@ -88,12 +90,25 @@ public class Animes extends javax.swing.JFrame {
             lblEstudio.setText(anime.getEstudio());
             lblCategoria.setText(anime.getCategoria().getNombre());
             lblGenero.setText(anime.getGenero().getNombre());
-            try {
-            String imagenPath = "C:\\Users\\Usuario\\Documents\\NetBeansProjects\\Prueba\\src\\imagenes\\" + codAnime + ".jpg";
-            ImageIcon imagenIcon = new ImageIcon(imagenPath);
-            Image imagen = imagenIcon.getImage().getScaledInstance(226, 320, Image.SCALE_SMOOTH);
-            ImageIcon imagenEscalada = new ImageIcon(imagen);
-            Imagen.setIcon(imagenEscalada);
+           try { 
+               
+               
+            String imagePath = "/imagenes/" + codAnime + ".jpg";
+            System.out.println("Intentando cargar la imagen desde: " + imagePath);
+            
+            // Usar getResourceAsStream para cargar la imagen desde el directorio de recursos
+            InputStream imageStream = getClass().getResourceAsStream(imagePath);
+            if (imageStream == null) {
+                throw new IllegalArgumentException("El archivo de imagen no se encontró: " + imagePath);
+            }
+            Image imagenOriginal = ImageIO.read(imageStream);
+            
+            Image imagenEscalada = imagenOriginal.getScaledInstance(226, 320, Image.SCALE_SMOOTH);
+            ImageIcon imagenIcono = new ImageIcon(imagenEscalada);
+            Imagen.setIcon(imagenIcono);
+            Imagen.revalidate();
+            Imagen.repaint();
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -142,12 +157,34 @@ public class Animes extends javax.swing.JFrame {
     }
 
     private void actualizarIconoMeGusta() {
+        
+        String imagePath;
         if (meGusta) {
-            GustarImg.setIcon(new ImageIcon("C:\\Users\\Usuario\\Documents\\NetBeansProjects\\Prueba\\src\\imagenes\\megustaLleno.jpg"));
+            imagePath = "/imagenes/megustaLleno.jpg";
         } else {
-            GustarImg.setIcon(new ImageIcon("C:\\Users\\Usuario\\Documents\\NetBeansProjects\\Prueba\\src\\imagenes\\megustaVacio.jpg"));
+            imagePath = "/imagenes/megustaVacio.jpg";
         }
-    }
+
+        try {
+            // Depuración: Imprimir la ruta del archivo
+            System.out.println("Intentando cargar la imagen desde: " + imagePath);
+
+            // Usar getResourceAsStream para cargar la imagen desde el directorio de recursos
+            InputStream imageStream = getClass().getResourceAsStream(imagePath);
+            if (imageStream == null) {
+                throw new IllegalArgumentException("El archivo de imagen no se encontró: " + imagePath);
+            }
+            Image imagenOriginal = ImageIO.read(imageStream);
+
+            ImageIcon imagenIcono = new ImageIcon(imagenOriginal);
+            GustarImg.setIcon(imagenIcono);
+            GustarImg.revalidate();
+            GustarImg.repaint();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+}
+
 
     private void actualizarEstadoMeGusta() {
         meGusta = !meGusta;

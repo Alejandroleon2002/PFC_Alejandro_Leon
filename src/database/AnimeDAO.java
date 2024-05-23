@@ -166,6 +166,25 @@ public class AnimeDAO {
     return animes;
 }
    
+    
+    private static final String INSERT_QUERY = "INSERT INTO Anime (nombre, anyo, descripcion, director, estudio, id_Categoria, id_Genero) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+       public boolean insertarAnime(Anime anime) {
+    try (Connection connection = Conexion.obtenerConexion();
+         PreparedStatement ps = connection.prepareStatement(INSERT_QUERY)) {
+        ps.setString(1, anime.getNombre());
+        ps.setInt(2, anime.getAnyo());
+        ps.setString(3, anime.getDescripcion());
+        ps.setString(4, anime.getDirector());
+        ps.setString(5, anime.getEstudio());
+        ps.setInt(6, anime.getIdCategoria());
+        ps.setInt(7, anime.getIdGenero());
+        return ps.executeUpdate() > 0;
+    } catch (SQLException e) {
+        System.out.println("Error al insertar anime: " + e.getMessage());
+        return false;
+    }
+}
    
     public boolean guardar(Anime anime) {
         String sql = "INSERT INTO anime (nombre, descripcion, anyo, director, estudio,  id_categoria, id_genero) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -356,6 +375,7 @@ public class AnimeDAO {
     }
     return null;
 }
+ 
     
     
     

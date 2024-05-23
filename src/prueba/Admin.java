@@ -44,22 +44,9 @@ public class Admin extends javax.swing.JFrame {
         categoriaDAO = new CategoriaDAO();
         generoDAO = new GeneroDAO();
     }
-    /*
-    public Admin(int id,int codAnime) {
-        
-        
-        this.codAnime = codAnime;
-        
-        this.idUsuario = id;
-        System.out.println(id);
-        
-        String nombreUsuario = usuarioDAO.obtenerNombreUsuario(id);
-        System.out.println("Nombre de usuario obtenido: " + nombreUsuario);
-        lblNombreUsuario.setText(nombreUsuario);
-        
-       
-    }
-    */
+    
+   
+    
     public Admin(int id) {
         
         this();

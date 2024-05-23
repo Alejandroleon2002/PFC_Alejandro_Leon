@@ -16,6 +16,8 @@ import java.sql.SQLException;
 import java.util.List;
 import javax.swing.JOptionPane;
 import model.Anime;
+import model.Categoria;
+import model.Genero;
 
 /**
  *
@@ -33,6 +35,7 @@ public class Añadir extends javax.swing.JFrame {
     private MeGustaDAO meGustaDAO;
     private int codAnime;
     private boolean meGusta;
+    
     /**
      * Creates new form Añadir
      */
@@ -45,8 +48,9 @@ public class Añadir extends javax.swing.JFrame {
         capituloDAO = new CapituloDAO();
         meGustaDAO = new MeGustaDAO();
         
+        
         actualizarTable();
-        combox();
+       
     }
     public Añadir(int id) {
         
@@ -54,10 +58,10 @@ public class Añadir extends javax.swing.JFrame {
         this.idUsuario = id;
         System.out.println(id);
         
-       
-        
-        actualizarTable();
+      
         combox();
+        actualizarTable();
+       
         
     }
      public Añadir(int  idUsuario, int codAnime) {
@@ -74,42 +78,111 @@ public class Añadir extends javax.swing.JFrame {
         capituloDAO = new CapituloDAO();
         meGustaDAO = new MeGustaDAO();
        
-        actualizarTable();
         combox();
+        actualizarTable();
+        
      }
+     
      
     
     public int obtenerIdUsuario() {
         return idUsuario;
     }
     
-    public void combox() {
+    
+        public void combox() {
         try {
             
-            ResultSet result = categoriaDAO.obtenerNombresCategorias();
-            ResultSet result2 = generoDAO.obtenerNombresGeneros();
+            ResultSet result3 = categoriaDAO.obtenerNombresCategorias();
+            ResultSet result4 = generoDAO.obtenerNombresGeneros();
 
-            jComboBox1.removeAllItems();
             
 
-            jComboBox2.removeAllItems();
+            comboCategoria.removeAllItems();
+            comboCategoria.addItem("Elija uno");
+
+            comboGenero.removeAllItems();
+            comboGenero.addItem("Elija uno");
+
             
 
-           
-
-            while (result.next()) {
-                jComboBox1.addItem(result.getString(1));
+            while (result3.next()) {
+                comboCategoria.addItem(result3.getString(1));
             }
 
-            while (result2.next()) {
-                jComboBox2.addItem(result2.getString(1));
+            while (result4.next()) {
+                comboGenero.addItem(result4.getString(1));
             }
-
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+
+   
+    
+        
+        private void guardarAnime() {
+    String nombre = txtNombre.getText();
+    String anyoStr = txtAnyo.getText();
+    String descripcion = txtDescripcion.getText();
+    String director = txtDirector.getText();
+    String estudio = txtEstudio.getText();
+
+    // Verificar que todos los campos obligatorios estén completos
+    if (nombre.isEmpty() || anyoStr.isEmpty() || descripcion.isEmpty() || director.isEmpty() || estudio.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Verificar que el año sea un número válido
+    int anyo;
+    try {
+        anyo = Integer.parseInt(anyoStr);
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "El año debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Obtener el nombre de la categoría seleccionada del JComboBox
+    String nombreCategoria = (String) comboCategoria.getSelectedItem();
+    // Obtener el nombre del género seleccionado del JComboBox
+    String nombreGenero = (String) comboGenero.getSelectedItem();
+
+    // Verificar que se haya seleccionado una categoría y un género
+    if (nombreCategoria == null || nombreGenero == null || nombreCategoria.equals("Elija uno") || nombreGenero.equals("Elija uno")) {
+        JOptionPane.showMessageDialog(this, "Debe seleccionar una categoría y un género.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Obtener el ID de la categoría y el género a partir de sus nombres
+    int idCategoria = categoriaDAO.obtenerIdCategoriaPorNombre(nombreCategoria);
+    int idGenero = generoDAO.obtenerIdGeneroPorNombre(nombreGenero);
+
+    // Verificar que se hayan obtenido los IDs de la categoría y el género
+    if (idCategoria == -1 || idGenero == -1) {
+        JOptionPane.showMessageDialog(this, "La categoría o el género seleccionados no son válidos.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Crear el objeto Anime con los datos ingresados
+    Anime anime = new Anime(nombre, anyo, descripcion, director, estudio, idCategoria, idGenero);
+
+    // Insertar el anime en la base de datos
+    boolean success = animeDAO.insertarAnime(anime);
+
+    if (success) {
+        JOptionPane.showMessageDialog(this, "Anime agregado exitosamente!");
+        dispose(); // Cierra el formulario después de guardar
+    } else {
+        JOptionPane.showMessageDialog(this, "Error al agregar anime.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
+
+
     
     public void actualizarTable() {
         AnimeTableModel model = new AnimeTableModel();
@@ -125,10 +198,8 @@ public class Añadir extends javax.swing.JFrame {
         table1.getColumnModel().getColumn(7).setMinWidth(0);
         table1.getColumnModel().getColumn(7).setMaxWidth(0);
         table1.getColumnModel().getColumn(7).setWidth(0);
-        
-        
-        
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -149,15 +220,15 @@ public class Añadir extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jComboBox2 = new javax.swing.JComboBox<>();
+        txtDescripcion = new javax.swing.JTextArea();
+        txtAnyo = new javax.swing.JTextField();
+        txtDirector = new javax.swing.JTextField();
+        txtEstudio = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
-        jTextField4 = new javax.swing.JTextField();
+        txtNombre = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
+        comboCategoria = new javax.swing.JComboBox<>();
+        comboGenero = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -193,19 +264,20 @@ public class Añadir extends javax.swing.JFrame {
 
         jLabel9.setText("Genero:");
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        txtDescripcion.setColumns(20);
+        txtDescripcion.setRows(5);
+        jScrollPane2.setViewportView(txtDescripcion);
 
         jButton1.setText("Añadir");
-
-        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField4ActionPerformed(evt);
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        txtNombre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNombreActionPerformed(evt);
             }
         });
 
@@ -216,10 +288,17 @@ public class Añadir extends javax.swing.JFrame {
             }
         });
 
+        comboCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        comboGenero.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1))
             .addGroup(layout.createSequentialGroup()
                 .addGap(38, 38, 38)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -227,19 +306,19 @@ public class Añadir extends javax.swing.JFrame {
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(jLabel6)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtDirector, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                             .addComponent(jLabel7)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtEstudio, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(layout.createSequentialGroup()
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel5)
                                 .addComponent(jLabel3))
                             .addGap(31, 31, 31)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jTextField1)
-                                .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))))
+                                .addComponent(txtAnyo)
+                                .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(48, 48, 48)
                         .addComponent(jButton1)
@@ -247,60 +326,57 @@ public class Añadir extends javax.swing.JFrame {
                         .addComponent(jButton2)))
                 .addGap(121, 121, 121)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(98, 98, 98)
+                            .addComponent(comboCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(91, 91, 91)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9))))
-                .addContainerGap(119, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1))
+                            .addComponent(jLabel9)
+                            .addComponent(comboGenero, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jLabel4)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(126, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
-                .addComponent(jLabel4)
-                .addGap(2, 2, 2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(53, 53, 53)
+                        .addGap(50, 50, 50)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel8)
-                            .addComponent(jLabel9)))
+                            .addComponent(jLabel9))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(comboCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboGenero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtAnyo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(30, 30, 30)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtDirector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(29, 29, 29)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
-                .addGap(0, 164, Short.MAX_VALUE))
+                            .addComponent(txtEstudio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(122, 122, 122)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton1)
+                            .addComponent(jButton2))))
+                .addGap(0, 139, Short.MAX_VALUE))
         );
 
         pack();
@@ -312,14 +388,14 @@ public class Añadir extends javax.swing.JFrame {
         int fila = table1.getSelectedRow();
         
         
-        jTextField4.setText(table1.getValueAt(fila, 0).toString());
-        jTextField1.setText(table1.getValueAt(fila, 1).toString());
+        txtNombre.setText(table1.getValueAt(fila, 0).toString());
+        txtAnyo.setText(table1.getValueAt(fila, 1).toString());
         
-        jComboBox1.setSelectedItem(table1.getValueAt(fila, 4));
-        jComboBox2.setSelectedItem(table1.getValueAt(fila, 5));
-        jTextField2.setText(table1.getValueAt(fila, 2).toString());
-        jTextField3.setText(table1.getValueAt(fila, 3).toString());
-        jTextArea1.setText(table1.getValueAt(fila, 7).toString());
+        comboCategoria.setSelectedItem(table1.getValueAt(fila, 4));
+        comboGenero.setSelectedItem(table1.getValueAt(fila, 5));
+        txtDirector.setText(table1.getValueAt(fila, 2).toString());
+        txtEstudio.setText(table1.getValueAt(fila, 3).toString());
+        txtDescripcion.setText(table1.getValueAt(fila, 7).toString());
         
         
 
@@ -363,20 +439,25 @@ public class Añadir extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        jTextField1.setText("");
-        jTextField2.setText("");
-        jTextField3.setText("");
-        jTextField4.setText("");
-        jTextArea1.setText("");
-        jComboBox1.setSelectedIndex(0);
-        jComboBox2.setSelectedIndex(0);
+        txtAnyo.setText("");
+        txtDirector.setText("");
+        txtEstudio.setText("");
+        txtNombre.setText("");
+        txtDescripcion.setText("");
+        comboCategoria.setSelectedIndex(0);
+        comboGenero.setSelectedIndex(0);
         
         actualizarTable();
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+    private void txtNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField4ActionPerformed
+    }//GEN-LAST:event_txtNombreActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        guardarAnime();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -414,10 +495,10 @@ public class Añadir extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> comboCategoria;
+    private javax.swing.JComboBox<String> comboGenero;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -427,11 +508,11 @@ public class Añadir extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JTable table1;
+    private javax.swing.JTextField txtAnyo;
+    private javax.swing.JTextArea txtDescripcion;
+    private javax.swing.JTextField txtDirector;
+    private javax.swing.JTextField txtEstudio;
+    private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
 }

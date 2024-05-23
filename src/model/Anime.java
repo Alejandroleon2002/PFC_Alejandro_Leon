@@ -46,8 +46,27 @@ public class Anime {
         this.estudio = estudio;
         this.categoria = categoria;
         this.genero = genero;
+        
+    }
+    public Anime(String nombre, int anyo, String descripcion, String director, String estudio, Categoria categoria, Genero genero) {
+        this.nombre = nombre;
+        this.anyo = anyo;
+        this.descripcion = descripcion;
+        this.director = director;
+        this.estudio = estudio;
+        this.categoria = categoria;
+        this.genero = genero;
     }
    
+    public Anime(String nombre, int anyo, String descripcion, String director, String estudio, int idCategoria, int idGenero) {
+        this.nombre = nombre;
+        this.anyo = anyo;
+        this.descripcion = descripcion;
+        this.director = director;
+        this.estudio = estudio;
+        this.idCategoria = idCategoria;
+        this.idGenero = idGenero;
+    }
     
 
     
@@ -115,6 +134,21 @@ public class Anime {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+    public int getIdCategoria() {
+        return idCategoria;
+    }
+
+    public void setIdCategoria(int idCategoria) {
+        this.idCategoria = idCategoria;
+    }
+
+    public int getIdGenero() {
+        return idGenero;
+    }
+
+    public void setIdGenero(int idGenero) {
+        this.idGenero = idGenero;
     }
 
     

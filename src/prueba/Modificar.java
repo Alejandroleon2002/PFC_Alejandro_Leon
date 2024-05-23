@@ -63,7 +63,7 @@ public class Modificar extends javax.swing.JFrame {
         datoGenero.removeAllItems();
 
         // Obtener todas las categorías y géneros
-        List<Categoria> categorias = categoriaDAO.obtenerTodasLasCategorias();
+        List<Categoria> categorias = categoriaDAO.obtenerCategorias();
         List<Genero> generos = generoDAO.obtenerTodosLosGeneros();
 
         // Agregar las nuevas categorías al ComboBox datoCateg
@@ -82,6 +82,7 @@ public class Modificar extends javax.swing.JFrame {
             datoCateg.setSelectedItem(anime.getCategoria().getNombre());
             datoGenero.setSelectedItem(anime.getGenero().getNombre());
         }
+        
     }
         
         
@@ -104,36 +105,36 @@ public class Modificar extends javax.swing.JFrame {
 
     
     private void actualizarDatosAnime(int codAnime) {
-    String nombre = datoNombre.getText();
-    int anyo = Integer.parseInt(datoAnyo.getText());
-    String descripcion = datoDescrip.getText();
-    String director = datoDirec.getText();
-    String estudio = datoEstud.getText();
-    String categoriaSeleccionada = (String) datoCateg.getSelectedItem();
-    String generoSeleccionado = (String) datoGenero.getSelectedItem();
+        String nombre = datoNombre.getText();
+        int anyo = Integer.parseInt(datoAnyo.getText());
+        String descripcion = datoDescrip.getText();
+        String director = datoDirec.getText();
+        String estudio = datoEstud.getText();
+        String categoriaSeleccionada = (String) datoCateg.getSelectedItem();
+        String generoSeleccionado = (String) datoGenero.getSelectedItem();
 
-    // Obtener el ID de la categoría y el género seleccionados
-    int idCategoria = categoriaDAO.obtenerIdCategoriaPorNombre(categoriaSeleccionada);
-    int idGenero = generoDAO.obtenerIdGeneroPorNombre(generoSeleccionado);
+        // Obtener el ID de la categoría y el género seleccionados
+        int idCategoria = categoriaDAO.obtenerIdCategoriaPorNombre(categoriaSeleccionada);
+        int idGenero = generoDAO.obtenerIdGeneroPorNombre(generoSeleccionado);
 
-    if (idCategoria == -1 || idGenero == -1) {
-        JOptionPane.showMessageDialog(this, "Categoría o Género no válidos.", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
+        if (idCategoria == -1 || idGenero == -1) {
+            JOptionPane.showMessageDialog(this, "Categoría o Género no válidos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-    Categoria categoria = new Categoria(idCategoria, categoriaSeleccionada);
-    Genero genero = new Genero(idGenero, generoSeleccionado);
+        Categoria categoria = new Categoria(idCategoria, categoriaSeleccionada);
+        Genero genero = new Genero(idGenero, generoSeleccionado);
 
-    // Crear un objeto Anime con los nuevos datos y el ID del anime
-    Anime animeActualizado = new Anime(codAnime, nombre, anyo, descripcion, director, estudio, categoria, genero);
+        // Crear un objeto Anime con los nuevos datos y el ID del anime
+        Anime animeActualizado = new Anime(codAnime, nombre, anyo, descripcion, director, estudio, categoria, genero);
 
-    // Actualizar los datos del anime en la base de datos
-    boolean actualizacionExitosa = animeDAO.actualizarAnime(animeActualizado);
+        // Actualizar los datos del anime en la base de datos
+        boolean actualizacionExitosa = animeDAO.actualizarAnime(animeActualizado);
 
-    if (actualizacionExitosa) {
-        JOptionPane.showMessageDialog(this, "Datos del anime actualizados correctamente.");
-    } else {
-        JOptionPane.showMessageDialog(this, "Error al actualizar los datos del anime.", "Error", JOptionPane.ERROR_MESSAGE);
+        if (actualizacionExitosa) {
+            JOptionPane.showMessageDialog(this, "Datos del anime actualizados correctamente.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al actualizar los datos del anime.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
     
