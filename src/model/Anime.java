@@ -68,7 +68,10 @@ public class Anime {
         this.idGenero = idGenero;
     }
     
-
+    public Anime(int idAnime, String nombre) {
+        this.idAnime= idAnime;
+        this.nombre = nombre;
+    }
     
     
     
@@ -151,5 +154,9 @@ public class Anime {
         this.idGenero = idGenero;
     }
 
+    @Override
+    public String toString() {
+        return nombre;
+    }
     
 }

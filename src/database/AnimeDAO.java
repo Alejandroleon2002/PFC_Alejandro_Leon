@@ -87,6 +87,21 @@ public class AnimeDAO {
     return animes;
 }
    
+   public List<Anime> obtenerAnimes() throws SQLException {
+        List<Anime> animes = new ArrayList<>();
+        Connection con = Conexion.obtenerConexion();
+        String sql = "SELECT anime_id, nombre FROM Anime";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Anime anime = new Anime();
+                anime.setIdAnime(rs.getInt("anime_id"));
+                anime.setNombre(rs.getString("nombre"));
+                animes.add(anime);
+            }
+        }
+        return animes;
+    }
    
    
     public List<Anime> filtrarAnime(String director, String estudio, String categoria, String genero, String nombre, String anyo) {

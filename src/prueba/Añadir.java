@@ -61,9 +61,9 @@ public class Añadir extends javax.swing.JFrame {
       
         combox();
         actualizarTable();
-       
         
     }
+    
      public Añadir(int  idUsuario, int codAnime) {
          
         initComponents();
@@ -85,9 +85,9 @@ public class Añadir extends javax.swing.JFrame {
      
      
     
-    public int obtenerIdUsuario() {
-        return idUsuario;
-    }
+        public int obtenerIdUsuario() {
+            return idUsuario;
+        }
     
     
         public void combox() {

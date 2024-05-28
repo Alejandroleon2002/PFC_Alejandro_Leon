@@ -60,6 +60,46 @@ public class CapituloDAO {
         return capitulos;
     }
     
+   public List<Capitulo> listarTodosLosCapitulos() {
+    List<Capitulo> capitulos = new ArrayList<>();
+    String sql = "SELECT * FROM Capitulo";
+
+    try (Connection con = Conexion.obtenerConexion();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            Capitulo capitulo = new Capitulo();
+            capitulo.setCapituloId(rs.getInt("capitulo_id"));
+            capitulo.setAnimeId(rs.getInt("anime_id"));
+            capitulo.setNumeroCapitulo(rs.getInt("numero_capitulo"));
+            capitulo.setTitulo(rs.getString("titulo"));
+            capitulo.setDuracion(rs.getInt("duracion"));
+            capitulos.add(capitulo);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        throw new RuntimeException(e);
+    }
+
+    return capitulos;
+}
+   
+   
+   public void insertarCapitulo(Capitulo capitulo) throws SQLException {
+        String sql = "INSERT INTO Capitulo (anime_id, numero_capitulo, titulo, duracion) VALUES (?, ?, ?, ?)";
+        
+        try (Connection con = Conexion.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, capitulo.getAnimeId());
+            ps.setInt(2, capitulo.getNumeroCapitulo());
+            ps.setString(3, capitulo.getTitulo());
+            ps.setInt(4, capitulo.getDuracion());
+            ps.executeUpdate();
+        }
+    }
+
+
+    
    public Capitulo obtenerCapituloPorId(int codCap, int codAnime) {
         String sql = "SELECT A.nombre AS nombre_anime, C.numero_capitulo, C.titulo AS titulo_capitulo, C.duracion " +
                      "FROM Anime A " +
