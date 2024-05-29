@@ -33,6 +33,7 @@ public class Admin extends javax.swing.JFrame {
     private CategoriaDAO categoriaDAO;
     private GeneroDAO generoDAO;
     private int codAnime;
+    
   
     /**
      * Creates new form Principal
@@ -43,6 +44,7 @@ public class Admin extends javax.swing.JFrame {
         animeDAO = new AnimeDAO();
         categoriaDAO = new CategoriaDAO();
         generoDAO = new GeneroDAO();
+        actualizarTable();
     }
     
    
@@ -52,6 +54,8 @@ public class Admin extends javax.swing.JFrame {
         this();
         this.idUsuario = id;
         System.out.println(id);
+        
+        animeDAO = new AnimeDAO();
         
         String nombreUsuario = usuarioDAO.obtenerNombreUsuario(id);
         System.out.println("Nombre de usuario obtenido: " + nombreUsuario);
@@ -477,8 +481,10 @@ public class Admin extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
        
-        Añadir A = new Añadir(  idUsuario);
-            A.setVisible(true);
+      
+            
+            Añadir añadirFrame = new Añadir(this); // Pasa la referencia de Admin
+        añadirFrame.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed

@@ -35,6 +35,7 @@ public class Añadir extends javax.swing.JFrame {
     private MeGustaDAO meGustaDAO;
     private int codAnime;
     private boolean meGusta;
+    private Admin admin;
     
     /**
      * Creates new form Añadir
@@ -52,18 +53,21 @@ public class Añadir extends javax.swing.JFrame {
         actualizarTable();
        
     }
-    public Añadir(int id) {
-        
-        this();
-        this.idUsuario = id;
-        System.out.println(id);
-        
-      
+    
+    
+    public Añadir(Admin adminFrame) {
+        initComponents();
+        this.admin = adminFrame; // Establecer la referencia al frame Admin
+        categoriaDAO = new CategoriaDAO();
+        generoDAO = new GeneroDAO();
+        animeDAO = new AnimeDAO();
         combox();
         actualizarTable();
-        
     }
     
+   
+    
+     
      public Añadir(int  idUsuario, int codAnime) {
          
         initComponents();
@@ -82,7 +86,6 @@ public class Añadir extends javax.swing.JFrame {
         actualizarTable();
         
      }
-     
      
     
         public int obtenerIdUsuario() {
@@ -174,10 +177,22 @@ public class Añadir extends javax.swing.JFrame {
 
     if (success) {
         JOptionPane.showMessageDialog(this, "Anime agregado exitosamente!");
-        dispose(); // Cierra el formulario después de guardar
-    } else {
-        JOptionPane.showMessageDialog(this, "Error al agregar anime.", "Error", JOptionPane.ERROR_MESSAGE);
-    }
+        
+        txtAnyo.setText("");
+        txtDirector.setText("");
+        txtEstudio.setText("");
+        txtNombre.setText("");
+        txtDescripcion.setText("");
+        comboCategoria.setSelectedIndex(0);
+        comboGenero.setSelectedIndex(0);
+        actualizarTable();
+        
+         if (admin != null) {
+                admin.actualizarTable();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al agregar anime.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
 }
 
 

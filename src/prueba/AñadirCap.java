@@ -141,29 +141,58 @@ public class AñadirCap extends javax.swing.JFrame {
 
     
         private void añadirCapitulo() {
-        try {
-            int animeId = obtenerIdAnimeSeleccionado();
-            if (animeId == -1) {
-                JOptionPane.showMessageDialog(this, "Seleccione un anime.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            int numeroCapi = Integer.parseInt(numeroCapitulo.getText());
-            String titulo = tituloCap.getText();
-            int duracion = Integer.parseInt(duracionCap.getText());
-
-            Capitulo capitulo = new Capitulo();
-            capitulo.setAnimeId(animeId);
-            capitulo.setNumeroCapitulo(numeroCapi);
-            capitulo.setTitulo(titulo);
-            capitulo.setDuracion(duracion);
-
-            capituloDAO.insertarCapitulo(capitulo);
-            JOptionPane.showMessageDialog(this, "Capítulo añadido exitosamente.");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al añadir capítulo: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    try {
+        int animeId = obtenerIdAnimeSeleccionado();
+        if (animeId == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un anime.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        String numeroCapiStr = numeroCapitulo.getText();
+        String titulo = tituloCap.getText();
+        String duracionStr = duracionCap.getText();
+
+        if (numeroCapiStr.isEmpty() || titulo.isEmpty() || duracionStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int numeroCapi;
+        try {
+            numeroCapi = Integer.parseInt(numeroCapiStr);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El número de capítulo debe ser un número.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int duracion;
+        try {
+            duracion = Integer.parseInt(duracionStr);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "La duración debe ser un número.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Capitulo capitulo = new Capitulo();
+        capitulo.setAnimeId(animeId);
+        capitulo.setNumeroCapitulo(numeroCapi);
+        capitulo.setTitulo(titulo);
+        capitulo.setDuracion(duracion);
+
+        capituloDAO.insertarCapitulo(capitulo);
+        JOptionPane.showMessageDialog(this, "Capítulo añadido exitosamente.");
+        actualizarTable(); // Actualizar la tabla después de añadir el capítulo
+        
+        numeroCapitulo.setText("");
+        duracionCap.setText("");
+        tituloCap.setText("");
+        AnimeCombox.setSelectedIndex(0);
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Error al añadir capítulo: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
+}
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -213,8 +242,18 @@ public class AñadirCap extends javax.swing.JFrame {
         AnimeCombox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jButton3.setText("Añadir");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton1.setText("Reiniciar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -284,6 +323,22 @@ public class AñadirCap extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        añadirCapitulo();
+        
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        numeroCapitulo.setText("");
+        duracionCap.setText("");
+        tituloCap.setText("");
+        AnimeCombox.setSelectedIndex(0);
+        
+        actualizarTable();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
