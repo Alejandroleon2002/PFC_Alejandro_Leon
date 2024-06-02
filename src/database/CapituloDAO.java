@@ -83,7 +83,28 @@ public class CapituloDAO {
 
     return capitulos;
 }
-   
+
+
+    public boolean actualizarCapitulo(Capitulo capitulo) {
+    String sql = "UPDATE Capitulo SET titulo = ?, numero_capitulo = ?, duracion = ?, anime_id = ? WHERE capitulo_id = ?";
+
+    try (Connection con = Conexion.obtenerConexion();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, capitulo.getTitulo());
+        ps.setInt(2, capitulo.getNumeroCapitulo());
+        ps.setInt(3, capitulo.getDuracion());
+        ps.setInt(4, capitulo.getAnimeId());
+        ps.setInt(5, capitulo.getCapituloId());
+
+        int rowsAffected = ps.executeUpdate();
+        return rowsAffected > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
+
    
    public void insertarCapitulo(Capitulo capitulo) throws SQLException {
         String sql = "INSERT INTO Capitulo (anime_id, numero_capitulo, titulo, duracion) VALUES (?, ?, ?, ?)";
@@ -131,6 +152,63 @@ public class CapituloDAO {
         }
         return null;
     }
+   
+   public Capitulo obtenerCapituloPorId(int idCapitulo) {
+    String sql = "SELECT C.numero_capitulo, C.titulo AS titulo_capitulo, C.duracion, " +
+                 "A.nombre AS nombre_anime " +
+                 "FROM Capitulo C " +
+                 "INNER JOIN Anime A ON C.anime_id = A.anime_id " +
+                 "WHERE C.capitulo_id = ?";
+    
+    try (Connection con = Conexion.obtenerConexion();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, idCapitulo);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                Capitulo capitulo = new Capitulo();
+                capitulo.setNumeroCapitulo(rs.getInt("numero_capitulo"));
+                capitulo.setTitulo(rs.getString("titulo_capitulo"));
+                capitulo.setDuracion(rs.getInt("duracion"));
+                
+                Anime anime = new Anime();
+                anime.setNombre(rs.getString("nombre_anime"));
+                capitulo.setAnime(anime);
+                
+                capitulo.setComentarios(obtenerComentariosPorCapitulo(idCapitulo)); // Agrega los comentarios
+                 
+                return capitulo;
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+
+   
+   public boolean eliminarCapitulo(int idCapitulo) {
+    String sqlComentarios = "DELETE FROM Comentario WHERE capitulo_id = ?";
+    String sqlCapitulo = "DELETE FROM Capitulo WHERE capitulo_id = ?";
+
+    try (Connection con = Conexion.obtenerConexion();
+         PreparedStatement psComentarios = con.prepareStatement(sqlComentarios);
+         PreparedStatement psCapitulo = con.prepareStatement(sqlCapitulo)) {
+
+        // Eliminar los comentarios asociados al capítulo
+        psComentarios.setInt(1, idCapitulo);
+        psComentarios.executeUpdate();
+
+        // Eliminar el capítulo
+        psCapitulo.setInt(1, idCapitulo);
+        int rowsAffected = psCapitulo.executeUpdate();
+        return rowsAffected > 0;
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return false;
+}
+
+
 
    public List<Comentario> obtenerComentariosPorCapitulo(int codCap) {
         String sql = "SELECT Co.comentario, Co.fecha_comentario, U.nombre_usuario " +

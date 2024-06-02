@@ -20,7 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.Anime;
-
+import prueba.Admin;
 /**
  *
  * @author Usuario
@@ -33,7 +33,8 @@ public class Admin extends javax.swing.JFrame {
     private CategoriaDAO categoriaDAO;
     private GeneroDAO generoDAO;
     private int codAnime;
-    
+    private Admin adminInstance;
+    private Añadir ventanaAñadir;
   
     /**
      * Creates new form Principal
@@ -405,8 +406,15 @@ public class Admin extends javax.swing.JFrame {
             int idUsuario = obtenerIdUsuario();
             System.out.println(idUsuario); 
             
-            Modificar A = new Modificar( idUsuario,codAnime);
-            A.setVisible(true);
+           Modificar ventanaModificar = new Modificar(idUsuario, codAnime, this, ventanaAñadir); // Pasar la instancia de "Admin"
+            ventanaModificar.setVisible(true);
+            
+            jTextField1.setText("");
+            jTextField2.setText("");
+            jComboBox1.setSelectedIndex(0);
+            jComboBox2.setSelectedIndex(0);
+            jComboBox3.setSelectedIndex(0);
+            jComboBox4.setSelectedIndex(0);
             
         }
         if (table1.getSelectedColumn() == 10) {
@@ -479,18 +487,19 @@ public class Admin extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1MouseClicked
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
-       
-      
-            
-            Añadir añadirFrame = new Añadir(this); // Pasa la referencia de Admin
-        añadirFrame.setVisible(true);
+        
+        int idUsuario = this.idUsuario; // O el valor correcto de ID del usuario
+        int codAnime = this.codAnime; // O el valor correcto del código del anime
+
+        Añadir añ = new Añadir(idUsuario, codAnime, this); // Pasa la referencia de Admin
+        añ.setVisible(true);
+
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
-        AñadirCap ac = new AñadirCap();
-        ac.setVisible(true);
+       AñadirCap ap = new AñadirCap(idUsuario, codAnime, this); // Pasa la referencia de Admin
+        ap.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**

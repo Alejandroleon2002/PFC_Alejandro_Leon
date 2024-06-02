@@ -30,6 +30,9 @@ public class Modificar extends javax.swing.JFrame {
     private GeneroDAO generoDAO;
     private int idUsuario;
     private int codAnime;
+    private Admin adminInstance;
+    private Añadir ventanaAñadir;
+   
     /**
      * Creates new form Modificar
      */
@@ -42,20 +45,20 @@ public class Modificar extends javax.swing.JFrame {
         generoDAO = new GeneroDAO(); // Asegúrate de inicializar generoDAO
 }
 
-    public Modificar(int idUsuario, int codAnime) {
+    public Modificar(int idUsuario, int codAnime, Admin admin, Añadir ventanaAñadir) {
         initComponents();
-        this.codAnime = codAnime; 
+        this.adminInstance = admin; // Asignar la instancia de Admin
+        this.ventanaAñadir = ventanaAñadir;
+        this.codAnime = codAnime;
         this.idUsuario = idUsuario;
         usuarioDAO = new UsuarioDAO();
-        animeDAO = new AnimeDAO(); 
+        animeDAO = new AnimeDAO();
         capituloDAO = new CapituloDAO();
         categoriaDAO = new CategoriaDAO();
         generoDAO = new GeneroDAO(); // Asegúrate de inicializar generoDAO
-        cargarDatosAnime(codAnime); 
+        cargarDatosAnime(codAnime);
         cargarComboBoxes();
-        
-    }
-    
+}
     
         public void cargarComboBoxes() {
         // Borrar los elementos existentes en los ComboBoxes
@@ -132,12 +135,20 @@ public class Modificar extends javax.swing.JFrame {
         boolean actualizacionExitosa = animeDAO.actualizarAnime(animeActualizado);
 
         if (actualizacionExitosa) {
-            JOptionPane.showMessageDialog(this, "Datos del anime actualizados correctamente.");
-        } else {
-            JOptionPane.showMessageDialog(this, "Error al actualizar los datos del anime.", "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Datos del anime actualizados correctamente.");
+        if (adminInstance != null) {
+            adminInstance.actualizarTable();
+        }
+        if (ventanaAñadir != null && ventanaAñadir.isVisible()) {
+            ventanaAñadir.actualizarTables();
+        }
+    } else {
+        JOptionPane.showMessageDialog(this, "Error al actualizar los datos del anime.", "Error", JOptionPane.ERROR_MESSAGE);
     }
+        
 }
     
+
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -300,6 +311,7 @@ public class Modificar extends javax.swing.JFrame {
         // TODO add your handling code here:
 
         actualizarDatosAnime(codAnime);
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

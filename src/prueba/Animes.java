@@ -21,6 +21,7 @@ import java.sql.Statement;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.Anime;
 import model.Capitulo;
@@ -38,6 +39,7 @@ public class Animes extends javax.swing.JFrame {
     private int idUsuario;
     private int codAnime;
     private boolean meGusta;
+    private AñadirCap añadirCapInstance;
     
     /**
      * Creates new form NewJFrame1
@@ -376,21 +378,48 @@ public class Animes extends javax.swing.JFrame {
 
     private void table1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table1MouseClicked
         // TODO add your handling code here:
-         int fila = table1.getSelectedRow();
+            int fila = table1.getSelectedRow();
         
 
-        if (table1.getSelectedColumn()==5){
-            int codiCap = (int) table1.getValueAt(fila, 0);
-            System.out.println(codiCap); 
-            int codiAnime = (int) table1.getValueAt(fila, 1);
-            System.out.println(codAnime); 
-            
-            int idUsuario = obtenerIdUsuario();
-            System.out.println(idUsuario); 
-        
-            Capitulos C = new Capitulos(idUsuario, codiCap , codiAnime);
-            C.setVisible(true);
+                if (table1.getSelectedColumn()==5){
+                    int codiCap = (int) table1.getValueAt(fila, 0);
+                    System.out.println(codiCap); 
+                    int codiAnime = (int) table1.getValueAt(fila, 1);
+                    System.out.println(codAnime); 
+
+                    int idUsuario = obtenerIdUsuario();
+                    System.out.println(idUsuario); 
+
+                    Capitulos C = new Capitulos(idUsuario, codiCap , codiAnime);
+                    C.setVisible(true);
+                }
+                if (table1.getSelectedColumn() == 6) { // Si se hace clic en el índice 6 (índice de la columna para modificar)
+                int idCapitulo = (int) table1.getValueAt(fila, 0); // Suponiendo que el ID del capítulo está en la primera columna
+                System.out.println(idCapitulo); 
+
+                ModificarCap mc = new ModificarCap(idUsuario, idCapitulo, codAnime,this,añadirCapInstance); // Crear una instancia del frame ModificarCap
+                mc.setVisible(true); // Mostrar el frame ModificarCap
+            }
+                if (table1.getSelectedColumn() == 7) { // 7 es el índice de la columna de la papelera
+            int idCapitulo = (int) table1.getValueAt(table1.getSelectedRow(), 0); // Suponiendo que el ID del capítulo está en la primera columna
+
+            // Preguntar al usuario si realmente desea eliminar el capítulo
+            int opcion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que deseas eliminar este capítulo?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+            if (opcion == JOptionPane.YES_OPTION) {
+                CapituloDAO capituloDAO = new CapituloDAO(); // Crea una instancia del DAO
+                boolean eliminado = capituloDAO.eliminarCapitulo(idCapitulo); // Llama al método para eliminar el capítulo
+                if (eliminado) {
+                    JOptionPane.showMessageDialog(this, "Capítulo eliminado exitosamente.");
+                    // Actualiza la tabla de capítulos si es necesario
+                    // Por ejemplo:
+                    actualizarTable();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al eliminar el capítulo.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         }
+
+
     }//GEN-LAST:event_table1MouseClicked
 
     private void GustarImgMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_GustarImgMouseClicked

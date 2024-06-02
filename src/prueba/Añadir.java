@@ -35,7 +35,9 @@ public class Añadir extends javax.swing.JFrame {
     private MeGustaDAO meGustaDAO;
     private int codAnime;
     private boolean meGusta;
-    private Admin admin;
+    private Admin adminInstance;
+    
+    
     
     /**
      * Creates new form Añadir
@@ -50,40 +52,32 @@ public class Añadir extends javax.swing.JFrame {
         meGustaDAO = new MeGustaDAO();
         
         
-        actualizarTable();
+        actualizarTables();
        
     }
     
     
-    public Añadir(Admin adminFrame) {
-        initComponents();
-        this.admin = adminFrame; // Establecer la referencia al frame Admin
-        categoriaDAO = new CategoriaDAO();
-        generoDAO = new GeneroDAO();
-        animeDAO = new AnimeDAO();
-        combox();
-        actualizarTable();
-    }
-    
-   
-    
-     
-     public Añadir(int  idUsuario, int codAnime) {
+     public Añadir(int  idUsuario, int codAnime, Admin admin) {
          
         initComponents();
         this.codAnime = codAnime; // Almacena la identificación del anime
-        System.out.println(codAnime);
-        
+       
+        this.adminInstance = admin;
         this.idUsuario = idUsuario;
-        System.out.println(idUsuario);
+       
+        System.out.println("ID Usuario: " + idUsuario);
+        System.out.println("Código Anime: " + codAnime);
+        
   
         usuarioDAO = new UsuarioDAO();
-        animeDAO = new AnimeDAO(); // Asegúrate de inicializar animeDAO
+        animeDAO = new AnimeDAO();
+        categoriaDAO = new CategoriaDAO();
+        generoDAO = new GeneroDAO();
         capituloDAO = new CapituloDAO();
         meGustaDAO = new MeGustaDAO();
        
         combox();
-        actualizarTable();
+        actualizarTables();
         
      }
      
@@ -122,98 +116,109 @@ public class Añadir extends javax.swing.JFrame {
         }
     }
 
-
    
+    public void actualizarTablaAñadir() {
+    AnimeTableModel model = new AnimeTableModel();
+    List<Anime> animes = animeDAO.listarAnimesConDetalles();
+    model.setAnimes(animes);
+    table1.setModel(model);
+
+    // Ocultar las columnas si es necesario
+    table1.getColumnModel().getColumn(6).setMinWidth(0);
+    table1.getColumnModel().getColumn(6).setMaxWidth(0);
+    table1.getColumnModel().getColumn(6).setWidth(0);
     
+    table1.getColumnModel().getColumn(7).setMinWidth(0);
+    table1.getColumnModel().getColumn(7).setMaxWidth(0);
+    table1.getColumnModel().getColumn(7).setWidth(0);
+}
         
         private void guardarAnime() {
-    String nombre = txtNombre.getText();
-    String anyoStr = txtAnyo.getText();
-    String descripcion = txtDescripcion.getText();
-    String director = txtDirector.getText();
-    String estudio = txtEstudio.getText();
+        String nombre = txtNombre.getText();
+        String anyoStr = txtAnyo.getText();
+        String descripcion = txtDescripcion.getText();
+        String director = txtDirector.getText();
+        String estudio = txtEstudio.getText();
 
-    // Verificar que todos los campos obligatorios estén completos
-    if (nombre.isEmpty() || anyoStr.isEmpty() || descripcion.isEmpty() || director.isEmpty() || estudio.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
+        if (nombre.isEmpty() || anyoStr.isEmpty() || descripcion.isEmpty() || director.isEmpty() || estudio.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-    // Verificar que el año sea un número válido
-    int anyo;
-    try {
-        anyo = Integer.parseInt(anyoStr);
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "El año debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
+        int anyo;
+        try {
+            anyo = Integer.parseInt(anyoStr);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El año debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-    // Obtener el nombre de la categoría seleccionada del JComboBox
-    String nombreCategoria = (String) comboCategoria.getSelectedItem();
-    // Obtener el nombre del género seleccionado del JComboBox
-    String nombreGenero = (String) comboGenero.getSelectedItem();
+        String nombreCategoria = (String) comboCategoria.getSelectedItem();
+        String nombreGenero = (String) comboGenero.getSelectedItem();
 
-    // Verificar que se haya seleccionado una categoría y un género
-    if (nombreCategoria == null || nombreGenero == null || nombreCategoria.equals("Elija uno") || nombreGenero.equals("Elija uno")) {
-        JOptionPane.showMessageDialog(this, "Debe seleccionar una categoría y un género.", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
+        if (nombreCategoria == null || nombreGenero == null || nombreCategoria.equals("Elija uno") || nombreGenero.equals("Elija uno")) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar una categoría y un género.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-    // Obtener el ID de la categoría y el género a partir de sus nombres
-    int idCategoria = categoriaDAO.obtenerIdCategoriaPorNombre(nombreCategoria);
-    int idGenero = generoDAO.obtenerIdGeneroPorNombre(nombreGenero);
+        int idCategoria = categoriaDAO.obtenerIdCategoriaPorNombre(nombreCategoria);
+        int idGenero = generoDAO.obtenerIdGeneroPorNombre(nombreGenero);
 
-    // Verificar que se hayan obtenido los IDs de la categoría y el género
-    if (idCategoria == -1 || idGenero == -1) {
-        JOptionPane.showMessageDialog(this, "La categoría o el género seleccionados no son válidos.", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
+        if (idCategoria == -1 || idGenero == -1) {
+            JOptionPane.showMessageDialog(this, "La categoría o el género seleccionados no son válidos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-    // Crear el objeto Anime con los datos ingresados
-    Anime anime = new Anime(nombre, anyo, descripcion, director, estudio, idCategoria, idGenero);
+        Anime anime = new Anime(nombre, anyo, descripcion, director, estudio, idCategoria, idGenero);
 
-    // Insertar el anime en la base de datos
-    boolean success = animeDAO.insertarAnime(anime);
+        boolean success = animeDAO.insertarAnime(anime);
 
-    if (success) {
-        JOptionPane.showMessageDialog(this, "Anime agregado exitosamente!");
-        
-        txtAnyo.setText("");
-        txtDirector.setText("");
-        txtEstudio.setText("");
-        txtNombre.setText("");
-        txtDescripcion.setText("");
-        comboCategoria.setSelectedIndex(0);
-        comboGenero.setSelectedIndex(0);
-        actualizarTable();
-        
-         if (admin != null) {
-                admin.actualizarTable();
+        if (success) {
+            JOptionPane.showMessageDialog(this, "Anime agregado exitosamente!");
+
+            // Limpiar campos de texto
+            txtAnyo.setText("");
+            txtDirector.setText("");
+            txtEstudio.setText("");
+            txtNombre.setText("");
+            txtDescripcion.setText("");
+            comboCategoria.setSelectedIndex(0);
+            comboGenero.setSelectedIndex(0);
+            
+            
+
+            if (adminInstance != null) {
+                adminInstance.actualizarTable();
+                
             }
+
+
         } else {
             JOptionPane.showMessageDialog(this, "Error al agregar anime.", "Error", JOptionPane.ERROR_MESSAGE);
         }
 }
 
+        public void actualizarTables() {
+            
+            System.out.println("Actualizando tabla en Añadir");
+            AnimeTableModel model = new AnimeTableModel();
+            List<Anime> animes = animeDAO.listarAnimesConDetalles();
+            System.out.println("Número de animes obtenidos: " + animes.size());
+            model.setAnimes(animes);
+            table1.setModel(model);
+
+            // Ocultar columnas no deseadas
+            table1.getColumnModel().getColumn(6).setMinWidth(0);
+            table1.getColumnModel().getColumn(6).setMaxWidth(0);
+            table1.getColumnModel().getColumn(6).setWidth(0);
+
+            table1.getColumnModel().getColumn(7).setMinWidth(0);
+            table1.getColumnModel().getColumn(7).setMaxWidth(0);
+            table1.getColumnModel().getColumn(7).setWidth(0);
+}
 
 
 
-    
-    public void actualizarTable() {
-        AnimeTableModel model = new AnimeTableModel();
-        List<Anime> animes = animeDAO.listarAnimesConDetalles();
-        model.setAnimes(animes);
-        table1.setModel(model);
-
-        // Ocultar la columnas
-        table1.getColumnModel().getColumn(6).setMinWidth(0);
-        table1.getColumnModel().getColumn(6).setMaxWidth(0);
-        table1.getColumnModel().getColumn(6).setWidth(0);
-        
-        table1.getColumnModel().getColumn(7).setMinWidth(0);
-        table1.getColumnModel().getColumn(7).setMaxWidth(0);
-        table1.getColumnModel().getColumn(7).setWidth(0);
-    }
     
 
     /**
@@ -432,9 +437,16 @@ public class Añadir extends javax.swing.JFrame {
             int idUsuario = obtenerIdUsuario();
             System.out.println(idUsuario); 
             
-            Modificar A = new Modificar( idUsuario,codAnime);
-            A.setVisible(true);
+            Modificar ventanaModificar = new Modificar(idUsuario, codAnime, adminInstance, this); // Pasar la instancia de "Añadir"
+            ventanaModificar.setVisible(true);
             
+            txtAnyo.setText("");
+            txtDirector.setText("");
+            txtEstudio.setText("");
+            txtNombre.setText("");
+            txtDescripcion.setText("");
+            comboCategoria.setSelectedIndex(0);
+            comboGenero.setSelectedIndex(0);
         }
         if (table1.getSelectedColumn() == 10) {
         int codAnime = (int) table1.getValueAt(fila, 6);
@@ -444,7 +456,7 @@ public class Añadir extends javax.swing.JFrame {
             boolean eliminacionExitosa = animeDAO.eliminarAnime(codAnime);
             if (eliminacionExitosa) {
                 JOptionPane.showMessageDialog(null, "Anime, sus capítulos, comentarios y 'Me Gusta' eliminados correctamente.");
-                actualizarTable();
+                actualizarTables();
             } else {
                 JOptionPane.showMessageDialog(null, "Error al eliminar el anime, sus capítulos, comentarios y 'Me Gusta'.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -462,7 +474,7 @@ public class Añadir extends javax.swing.JFrame {
         comboCategoria.setSelectedIndex(0);
         comboGenero.setSelectedIndex(0);
         
-        actualizarTable();
+        actualizarTables();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void txtNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreActionPerformed
@@ -472,6 +484,7 @@ public class Añadir extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         guardarAnime();
+        actualizarTables();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

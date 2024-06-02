@@ -5,6 +5,7 @@
 package prueba;
 
 
+import database.UsuarioDAO;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
@@ -15,85 +16,52 @@ import java.sql.SQLException;
 import java.sql.DriverManager;
 
 public class Registrarse extends javax.swing.JFrame {
-    private Connection conexion;
-    private String bbdd = "jdbc:hsqldb:hsql://localhost/";
+    private UsuarioDAO usuarioDAO;
     
     /**
      * Creates new form Registrarse
      */
     public Registrarse() {
         initComponents();
-        
-        try {
-            Class.forName("org.hsqldb.jdbc.JDBCDriver");
-            conexion = DriverManager.getConnection(bbdd, "SA", "SA");
-            if (conexion != null) {
-                System.out.println("Conexión creada exitosamente");
-            } else {
-                System.out.println("Problema al crear la conexión");
-            }
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace(System.out);
-        }
-        
-        btnRegistrar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                registrarUsuario();
-            }
-        });
+        usuarioDAO = new UsuarioDAO();
+
     }
     
     private void registrarUsuario() {
+        
         String nombreUsuario = txtNombreUsuario.getText();
         String correo = txtCorreo.getText();
         String contraseña = new String(txtContraseña.getPassword());
 
-        if (nombreUsuario.isEmpty() || correo.isEmpty() || contraseña.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+        if (nombreUsuario.isEmpty() || contraseña.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El nombre de usuario y la contraseña son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        if (usuarioExistente(nombreUsuario)) {
+        if (correo.isEmpty() || !correo.contains("@")) {
+            JOptionPane.showMessageDialog(this, "El correo electrónico es obligatorio y debe contener el carácter '@'.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (contraseña.length() < 4) {
+            JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos 4 caracteres.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (usuarioDAO.usuarioExistente(nombreUsuario)) {
             JOptionPane.showMessageDialog(this, "El nombre de usuario ya está en uso.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        guardarUsuario(nombreUsuario, correo, contraseña);
-
+        usuarioDAO.guardarUsuario(nombreUsuario, correo, contraseña);
         JOptionPane.showMessageDialog(this, "Usuario registrado con éxito.", "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
 
-    }
+        txtNombreUsuario.setText("");
+        txtCorreo.setText("");
+        txtContraseña.setText("");
+}
 
-    private boolean usuarioExistente(String nombreUsuario) {
-        boolean existe = false;
-        try {
-            String sql = "SELECT COUNT(*) AS count FROM Usuario WHERE nombre_usuario = ?";
-            PreparedStatement statement = conexion.prepareStatement(sql);
-            statement.setString(1, nombreUsuario);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                int count = resultSet.getInt("count");
-                existe = count > 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return existe;
-    }
 
-    private void guardarUsuario(String nombreUsuario, String correo, String contraseña) {
-        try {
-            String sql = "INSERT INTO Usuario (nombre_usuario, correo, contraseña) VALUES (?, ?, ?)";
-            PreparedStatement statement = conexion.prepareStatement(sql);
-            statement.setString(1, nombreUsuario);
-            statement.setString(2, correo);
-            statement.setString(3, contraseña);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
 
 
@@ -185,6 +153,7 @@ public class Registrarse extends javax.swing.JFrame {
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
         // TODO add your handling code here:
+        registrarUsuario();
         
         
         

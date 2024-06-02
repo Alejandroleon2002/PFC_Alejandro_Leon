@@ -7,6 +7,9 @@ package prueba;
 import database.AnimeDAO;
 import database.CapituloDAO;
 import database.UsuarioDAO;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.sql.Connection;
@@ -23,6 +26,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import model.Capitulo;
 import model.Comentario;
+import javax.swing.BorderFactory;
+import javax.swing.border.Border;
+
 
 public class Capitulos extends javax.swing.JFrame {
     
@@ -32,13 +38,16 @@ public class Capitulos extends javax.swing.JFrame {
     private int idUsuario;
     private int codAnime;
     private int codCap;
-    private JScrollPane scrollPaneles;
+    
 
     public Capitulos() {
         initComponents();
         usuarioDAO = new UsuarioDAO();
         animeDAO = new AnimeDAO();
         capituloDAO = new CapituloDAO();
+        
+        
+        
         
         
     }
@@ -52,70 +61,127 @@ public class Capitulos extends javax.swing.JFrame {
         this.codCap = codCap;
         mostrarInformacionCapitulo();
         
+       
+        
     
     }
     
 
+    
     private void mostrarInformacionCapitulo() {
-        Capitulo capitulo = capituloDAO.obtenerCapituloPorId(codCap, codAnime); // Obtiene el capítulo por su identificación
+        Capitulo capitulo = capituloDAO.obtenerCapituloPorId(codCap, codAnime);
         if (capitulo != null) {
             lblNombre.setText(capitulo.getAnime().getNombre());
             lblNumeroCapitulo.setText(String.valueOf(capitulo.getNumeroCapitulo()));
             lblTituloCapitulo.setText(capitulo.getTitulo());
             lblDuracion.setText(String.valueOf(capitulo.getDuracion()));
-            
-            // Muestra los comentarios
             mostrarComentarios(capitulo.getComentarios());
         } else {
-            // Manejar el caso en que no se encuentre el capítulo
             System.out.println("El capítulo no se encontró en la base de datos.");
         }
     }
+   /*
+   private void mostrarComentarios(List<Comentario> comentarios) {
+    JPanel panelComentariosContainer = new JPanel(); // Creamos un panel contenedor
+    
+    panelComentariosContainer.setLayout(new BoxLayout(panelComentariosContainer, BoxLayout.Y_AXIS)); // Establecemos el diseño para el contenedor
+    
+    // Variable para verificar si es el primer comentario
+    boolean primerComentario = true;
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+    // Recorre los comentarios y agrega cada uno al panel contenedor
+    for (Comentario comentario : comentarios) {
+        // Si no es el primer comentario, agrega un espacio en blanco
+        if (!primerComentario) {
+            panelComentariosContainer.add(Box.createVerticalStrut(10)); // Espacio vertical
+        } else {
+            primerComentario = false;
+        }
+
+        String usuarioFecha = comentario.getNombreUsuario() != null ? 
+            comentario.getNombreUsuario() + " - " + dateFormat.format(comentario.getFechaComentario()) : "";
+        String comentarioTexto = comentario.getComentario();
+        // Verifica si el comentario es null, y si lo es, establece una cadena vacía
+        if (comentarioTexto == null) {
+            comentarioTexto = "";
+        }
+
+        // Crea un panel para contener el nombre de usuario y la fecha
+        JPanel panelUsuarioFecha = new JPanel();
+        panelUsuarioFecha.setLayout(new BoxLayout(panelUsuarioFecha, BoxLayout.X_AXIS));
+        panelUsuarioFecha.add(new JLabel(usuarioFecha));
+
+        // Crea un label para el comentario
+        JLabel labelComentario = new JLabel(comentarioTexto);
+
+        // Agrega el panel con el nombre de usuario y la fecha, y el label del comentario al panel contenedor
+        panelComentariosContainer.add(panelUsuarioFecha);
+        panelComentariosContainer.add(labelComentario);
+    }
+
+    // Establecemos el panel contenedor como la vista del JScrollPane
+    panelComentarios.setViewportView(panelComentariosContainer);
+}
+*/
+    
     
 
-    private void mostrarComentarios(List<Comentario> comentarios) {
-        panelComentarios.removeAll();
-        panelComentarios.setLayout(new BoxLayout(panelComentarios, BoxLayout.Y_AXIS));
 
-        // Variable para verificar si es el primer comentario
-        boolean primerComentario = true;
+
+        private void mostrarComentarios(List<Comentario> comentarios) {
+        JPanel panelComentariosContainer = new JPanel();
+        panelComentariosContainer.setLayout(new BoxLayout(panelComentariosContainer, BoxLayout.Y_AXIS));
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        // Recorre los comentarios y agrega cada uno al panel
         for (Comentario comentario : comentarios) {
-            // Si no es el primer comentario, agrega un espacio en blanco
-            if (!primerComentario) {
-                panelComentarios.add(Box.createVerticalStrut(10)); // Espacio vertical
-            } else {
-                primerComentario = false;
-            }
-
             String usuarioFecha = comentario.getNombreUsuario() != null ? 
                 comentario.getNombreUsuario() + " - " + dateFormat.format(comentario.getFechaComentario()) : "";
             String comentarioTexto = comentario.getComentario();
-            // Verifica si el comentario es null, y si lo es, establece una cadena vacía
             if (comentarioTexto == null) {
                 comentarioTexto = "";
             }
 
-            // Crea un panel para contener el nombre de usuario y la fecha
-            JPanel panelUsuarioFecha = new JPanel();
-            panelUsuarioFecha.setLayout(new BoxLayout(panelUsuarioFecha, BoxLayout.X_AXIS));
-            panelUsuarioFecha.add(new JLabel(usuarioFecha));
+            // Panel para cada comentario con borde
+            JPanel panelComentario = new JPanel();
+            panelComentario.setLayout(new BoxLayout(panelComentario, BoxLayout.Y_AXIS));
+            Border borde = BorderFactory.createLineBorder(Color.BLACK);
+            panelComentario.setBorder(borde);
 
-            // Crea un label para el comentario
-            JLabel labelComentario = new JLabel(comentarioTexto);
+            // Añadir margen alrededor del contenido del panelComentario
+            panelComentario.setBorder(BorderFactory.createCompoundBorder(
+                borde,
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            ));
 
-            // Agrega el panel con el nombre de usuario y la fecha, y el label del comentario al panel principal
-            panelComentarios.add(panelUsuarioFecha);
-            panelComentarios.add(labelComentario);
+            // Label para usuario y fecha
+            JLabel labelUsuarioFecha = new JLabel(usuarioFecha);
+            labelUsuarioFecha.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            // Label para el comentario
+            JLabel labelComentario = new JLabel("<html><body style='text-align: center;'>" + comentarioTexto + "</body></html>");
+            labelComentario.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            // Añadir labels al panel del comentario
+            panelComentario.add(Box.createVerticalStrut(2)); // Añadir espacio vertical
+            panelComentario.add(labelUsuarioFecha);
+            panelComentario.add(Box.createVerticalStrut(10)); // Añadir espacio vertical
+            panelComentario.add(labelComentario);
+            panelComentario.add(Box.createVerticalStrut(10)); // Añadir espacio vertical
+
+            // Añadir panel de comentario al contenedor
+            panelComentariosContainer.add(panelComentario);
+            panelComentariosContainer.add(Box.createVerticalStrut(2)); // Espacio entre comentarios
         }
 
-        // Refresca el panel de comentarios
-        panelComentarios.revalidate();
-        panelComentarios.repaint();
+        // Establecemos el panel contenedor como la vista del JScrollPane
+        panelComentarios.setViewportView(panelComentariosContainer);
     }
-    
+
+
+
+
     private void comentarCapitulo(String comentarioTexto) {
     // Verificar si el texto del comentario no está vacío
     if (!comentarioTexto.isEmpty()) {
@@ -135,7 +201,7 @@ public class Capitulos extends javax.swing.JFrame {
         mostrarInformacionCapitulo();
     }
 }
-
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -159,7 +225,7 @@ public class Capitulos extends javax.swing.JFrame {
         lblDuracion = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        panelComentarios = new javax.swing.JPanel();
+        panelComentarios = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -188,19 +254,6 @@ public class Capitulos extends javax.swing.JFrame {
             }
         });
 
-        panelComentarios.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
-
-        javax.swing.GroupLayout panelComentariosLayout = new javax.swing.GroupLayout(panelComentarios);
-        panelComentarios.setLayout(panelComentariosLayout);
-        panelComentariosLayout.setHorizontalGroup(
-            panelComentariosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        panelComentariosLayout.setVerticalGroup(
-            panelComentariosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 150, Short.MAX_VALUE)
-        );
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -222,13 +275,16 @@ public class Capitulos extends javax.swing.JFrame {
                             .addComponent(lblDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel6)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel6))
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(panelComentarios, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(panelComentarios, javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
-                                .addGap(37, 37, 37)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
                                 .addComponent(jButton1)))))
                 .addGap(147, 147, 147))
         );
@@ -255,13 +311,16 @@ public class Capitulos extends javax.swing.JFrame {
                     .addComponent(jButton1))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel6)
-                .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jLabel3)
-                        .addComponent(lblDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(panelComentarios, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(30, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel3)
+                            .addComponent(lblDuracion, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(34, 34, 34)
+                        .addComponent(panelComentarios, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(68, Short.MAX_VALUE))
         );
 
         pack();
@@ -274,6 +333,8 @@ public class Capitulos extends javax.swing.JFrame {
     
     // Llamar al método comentarCapitulo para agregar el comentario
     comentarCapitulo(textoComentario);
+    
+    areaComentario.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -325,6 +386,6 @@ public class Capitulos extends javax.swing.JFrame {
     private javax.swing.JLabel lblNombre;
     private javax.swing.JLabel lblNumeroCapitulo;
     private javax.swing.JLabel lblTituloCapitulo;
-    private javax.swing.JPanel panelComentarios;
+    private javax.swing.JScrollPane panelComentarios;
     // End of variables declaration//GEN-END:variables
 }

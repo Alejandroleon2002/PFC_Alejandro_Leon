@@ -87,19 +87,25 @@ public class AnimeDAO {
     return animes;
 }
    
-   public List<Anime> obtenerAnimes() throws SQLException {
+   public List<Anime> obtenerAnimes() {
         List<Anime> animes = new ArrayList<>();
-        Connection con = Conexion.obtenerConexion();
         String sql = "SELECT anime_id, nombre FROM Anime";
-        try (PreparedStatement ps = con.prepareStatement(sql);
+        
+        try (Connection con = Conexion.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
+            
             while (rs.next()) {
                 Anime anime = new Anime();
                 anime.setIdAnime(rs.getInt("anime_id"));
                 anime.setNombre(rs.getString("nombre"));
                 animes.add(anime);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+        
         return animes;
     }
    
@@ -247,28 +253,7 @@ public class AnimeDAO {
     return false;
 }
 
-    public boolean actualizar(Anime anime) {
-        String sql = "UPDATE anime SET nombre = ?, descripcion = ?, anyo = ?, director = ?, estudio = ?, id_categoria = ?, id_genero = ? WHERE anime_id = ?";
-        
-        try (Connection con = Conexion.obtenerConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-             
-            ps.setString(1, anime.getNombre());
-            ps.setString(2, anime.getDescripcion());
-            ps.setInt(3, anime.getAnyo());
-            ps.setString(4, anime.getDirector());
-            ps.setString(5, anime.getEstudio());
-            ps.setInt(6, anime.getCategoria().getCategoriaId());
-            ps.setInt(7, anime.getGenero().getGeneroId());
-            ps.setInt(8, anime.getIdAnime());
-            
-            int filasActualizadas = ps.executeUpdate();
-            return filasActualizadas == 1;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+    
 
     public boolean eliminarAnime(int idAnime) {
     String sqlMeGusta = "DELETE FROM MeGusta WHERE anime_id = ?";

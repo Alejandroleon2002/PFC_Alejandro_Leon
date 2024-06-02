@@ -19,6 +19,17 @@ public class Capitulo {
     private Anime anime;
     private List<Comentario> comentarios;
 
+    public Capitulo() {
+    }
+
+    public Capitulo(int capituloId, int animeId, String titulo, int numeroCapitulo, int duracion) {
+        this.capituloId = capituloId;
+        this.animeId = animeId;
+        this.titulo = titulo;
+        this.numeroCapitulo = numeroCapitulo;
+        this.duracion = duracion;
+    }
+
     public int getCapituloId() {
         return capituloId;
     }

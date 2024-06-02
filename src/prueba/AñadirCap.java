@@ -7,6 +7,8 @@ package prueba;
 import database.AnimeDAO;
 import database.CapituloDAO;
 import database.CapituloTableModel;
+import database.CategoriaDAO;
+import database.GeneroDAO;
 import database.MeGustaDAO;
 import database.UsuarioDAO;
 import java.awt.event.ActionEvent;
@@ -31,9 +33,14 @@ public class AñadirCap extends javax.swing.JFrame {
     private AnimeDAO animeDAO;
     private CapituloDAO capituloDAO;
     private MeGustaDAO meGustaDAO;
+    private CategoriaDAO categoriaDAO;
+    private GeneroDAO generoDAO;
     private int idUsuario;
     private int codAnime;
     private List<Anime> animes;
+    private Admin adminFrame;
+    private Animes animesFrame;
+    private AñadirCap añadirCapInstance;
     
     /**
      * Creates new form AñadirCap
@@ -44,48 +51,76 @@ public class AñadirCap extends javax.swing.JFrame {
         animeDAO = new AnimeDAO();
         capituloDAO = new CapituloDAO();
         meGustaDAO = new MeGustaDAO();
+        categoriaDAO = new CategoriaDAO();
+        generoDAO = new GeneroDAO();
         actualizarTable();
         cargarComboAnimes();
         
+        
         AnimeCombox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Obtener el ID del anime seleccionado
                 int animeId = obtenerIdAnimeSeleccionado();
-                // Filtrar y actualizar la tabla de capítulos por el anime seleccionado
+                filtrarCapitulosPorAnime(animeId);
+            }
+        });
+    }
+        public AñadirCap(int idUsuario, int codAnime, Animes animesFrame) {
+        initComponents();
+        this.animesFrame = animesFrame; // Asigna la referencia a Animes
+        this.idUsuario = idUsuario;
+        this.codAnime = codAnime;
+        this.añadirCapInstance = añadirCapInstance;
+        usuarioDAO = new UsuarioDAO();
+        animeDAO = new AnimeDAO();
+        categoriaDAO = new CategoriaDAO();
+        generoDAO = new GeneroDAO();
+        capituloDAO = new CapituloDAO();
+        meGustaDAO = new MeGustaDAO();
+
+        cargarComboAnimes();
+        actualizarTable();
+        
+        AnimeCombox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int animeId = obtenerIdAnimeSeleccionado();
+                filtrarCapitulosPorAnime(animeId);
+            }
+        });
+        
+    }
+
+    public AñadirCap(int idUsuario, int codAnime, Admin adminFrame) {
+        initComponents();
+        this.adminFrame = adminFrame;
+        this.idUsuario = idUsuario;
+        this.codAnime = codAnime;
+        
+        usuarioDAO = new UsuarioDAO();
+        animeDAO = new AnimeDAO();
+        categoriaDAO = new CategoriaDAO();
+        generoDAO = new GeneroDAO();
+        capituloDAO = new CapituloDAO();
+        meGustaDAO = new MeGustaDAO();
+
+        cargarComboAnimes();
+        actualizarTable();
+        
+        AnimeCombox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int animeId = obtenerIdAnimeSeleccionado();
                 filtrarCapitulosPorAnime(animeId);
             }
         });
     }
     
-    public AñadirCap(int  idUsuario) {
-        initComponents();
-        usuarioDAO = new UsuarioDAO();
-        animeDAO = new AnimeDAO();
-        capituloDAO = new CapituloDAO();
-        meGustaDAO = new MeGustaDAO();
-        actualizarTable();
-        cargarComboAnimes();
+    
+    
+    public int obtenerIdUsuario() {
+        return idUsuario;
     }
     
     
-    private void filtrarCapitulosPorAnime(int animeId) {
-        if (animeId != -1) {
-            // Obtener los capítulos por el ID del anime
-            List<Capitulo> capitulos = capituloDAO.listarCapitulosPorAnime(animeId);
-            // Actualizar la tabla con los nuevos capítulos
-            CapituloTableModel model = new CapituloTableModel();
-            model.setCapitulos(capitulos);
-            table1.setModel(model);
-            // Ocultar la columnas
-        table1.getColumnModel().getColumn(0).setMinWidth(0);
-        table1.getColumnModel().getColumn(0).setMaxWidth(0);
-        table1.getColumnModel().getColumn(0).setWidth(0);
-        
-        table1.getColumnModel().getColumn(1).setMinWidth(0);
-        table1.getColumnModel().getColumn(1).setMaxWidth(0);
-        table1.getColumnModel().getColumn(1).setWidth(0);
-        }
-    }
+    
     
     
     public void actualizarTable() {
@@ -106,25 +141,23 @@ public class AñadirCap extends javax.swing.JFrame {
         
         
     }
+    
+    
+    
    public void cargarComboAnimes() {
-        try {
-            List<Anime> animes = animeDAO.obtenerAnimes();
-
-            AnimeCombox.removeAllItems();
-            AnimeCombox.addItem("Elija uno");
-
-            for (Anime anime : animes) {
-                AnimeCombox.addItem(anime.getNombre());
-            }
-
-            // Guardar la lista de animes para usar sus IDs más tarde
-            this.animes = animes;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+       List<Anime> animes = animeDAO.obtenerAnimes();
+       AnimeCombox.removeAllItems();
+       AnimeCombox.addItem("Elija uno");
+       for (Anime anime : animes) {
+           AnimeCombox.addItem(anime.getNombre());
+       }
+       // Guardar la lista de animes para usar sus IDs más tarde
+       this.animes = animes;
     }
         
+   
+   
+   
       private int obtenerIdAnimeSeleccionado() {
         String nombreSeleccionado = (String) AnimeCombox.getSelectedItem();
         if (nombreSeleccionado == null || nombreSeleccionado.equals("Elija uno")) {
@@ -138,7 +171,25 @@ public class AñadirCap extends javax.swing.JFrame {
         return -1; // Si no se encuentra el anime (no debería pasar)
     }
 
-
+      
+      private void filtrarCapitulosPorAnime(int animeId) {
+        if (animeId != -1) {
+            // Obtener los capítulos por el ID del anime
+            List<Capitulo> capitulos = capituloDAO.listarCapitulosPorAnime(animeId);
+            // Actualizar la tabla con los nuevos capítulos
+            CapituloTableModel model = new CapituloTableModel();
+            model.setCapitulos(capitulos);
+            table1.setModel(model);
+            // Ocultar la columnas
+        table1.getColumnModel().getColumn(0).setMinWidth(0);
+        table1.getColumnModel().getColumn(0).setMaxWidth(0);
+        table1.getColumnModel().getColumn(0).setWidth(0);
+        
+        table1.getColumnModel().getColumn(1).setMinWidth(0);
+        table1.getColumnModel().getColumn(1).setMaxWidth(0);
+        table1.getColumnModel().getColumn(1).setWidth(0);
+        }
+    }
     
         private void añadirCapitulo() {
     try {
@@ -229,6 +280,11 @@ public class AñadirCap extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        table1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(table1);
 
         jLabel2.setText("Anime:");
@@ -339,6 +395,51 @@ public class AñadirCap extends javax.swing.JFrame {
         
         actualizarTable();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void table1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table1MouseClicked
+        // TODO add your handling code here:
+         int fila = table1.getSelectedRow();
+        
+
+        if (table1.getSelectedColumn()==5){
+            int codiCap = (int) table1.getValueAt(fila, 0);
+            System.out.println(codiCap); 
+            int codiAnime = (int) table1.getValueAt(fila, 1);
+            System.out.println(codAnime); 
+            
+            int idUsuario = obtenerIdUsuario();
+            System.out.println(idUsuario); 
+        
+            Capitulos C = new Capitulos(idUsuario, codiCap , codiAnime);
+            C.setVisible(true);
+        }
+                if (table1.getSelectedColumn() == 6) { 
+            int idCapitulo = (int) table1.getValueAt(fila, 0);
+            System.out.println(idCapitulo); 
+
+            // Crear una instancia del frame ModificarCap, pasando la referencia de la instancia de Animes
+            ModificarCap mc = new ModificarCap(idUsuario, idCapitulo, codAnime, animesFrame,this);
+            mc.setVisible(true); // Mostrar el frame ModificarCap
+        }
+        if (table1.getSelectedColumn() == 7) { // 7 es el índice de la columna de la papelera
+    int idCapitulo = (int) table1.getValueAt(table1.getSelectedRow(), 0); // Suponiendo que el ID del capítulo está en la primera columna
+
+    // Preguntar al usuario si realmente desea eliminar el capítulo
+    int opcion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que deseas eliminar este capítulo?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+    if (opcion == JOptionPane.YES_OPTION) {
+        CapituloDAO capituloDAO = new CapituloDAO(); // Crea una instancia del DAO
+        boolean eliminado = capituloDAO.eliminarCapitulo(idCapitulo); // Llama al método para eliminar el capítulo
+        if (eliminado) {
+            JOptionPane.showMessageDialog(this, "Capítulo eliminado exitosamente.");
+            // Actualiza la tabla de capítulos si es necesario
+            // Por ejemplo:
+            actualizarTable();
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al eliminar el capítulo.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+}
+    }//GEN-LAST:event_table1MouseClicked
 
     /**
      * @param args the command line arguments

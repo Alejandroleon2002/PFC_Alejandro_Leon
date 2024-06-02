@@ -118,22 +118,45 @@ public class UsuarioDAO {
         }
         return -1; // Si no se encontró el usuario, se devuelve -1
     }
-    
-    
-    
-    public String obtenerNombreUsuario(int id) {
-        try (Connection con = Conexion.obtenerConexion()) {
-            String sql = "SELECT nombre_usuario FROM Usuario WHERE usuario_id = ?";
-            PreparedStatement statement = con.prepareStatement(sql);
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
 
-            if (resultSet.next()) {
-                return resultSet.getString("nombre_usuario");
+    public String obtenerNombreUsuario(int id) {
+        try (Connection con = Conexion.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement("SELECT nombre_usuario FROM Usuario WHERE usuario_id = ?")) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("nombre_usuario");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return "Usuario no encontrado";
+    }
+
+    public boolean usuarioExistente(String nombreUsuario) {
+        try (Connection con = Conexion.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) AS count FROM Usuario WHERE nombre_usuario = ?")) {
+            ps.setString(1, nombreUsuario);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt("count");
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(System.out);
+        }
+        return false;
+    }
+
+    public void guardarUsuario(String nombreUsuario, String correo, String contraseña) {
+        try (Connection con = Conexion.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement("INSERT INTO Usuario (nombre_usuario, correo, contraseña) VALUES (?, ?, ?)")) {
+            ps.setString(1, nombreUsuario);
+            ps.setString(2, correo);
+            ps.setString(3, contraseña);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace(System.out);
+        }
     }
 }

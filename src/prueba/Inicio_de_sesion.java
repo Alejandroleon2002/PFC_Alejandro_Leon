@@ -17,7 +17,6 @@ import prueba.Conexion;
 
 public class Inicio_de_sesion extends javax.swing.JFrame {
     private UsuarioDAO usuarioDAO;
-    private Connection conexion;
     private int userID;
    
     

@@ -4,18 +4,178 @@
  */
 package prueba;
 
+import database.AnimeDAO;
+import database.CapituloDAO;
+import database.CategoriaDAO;
+import database.GeneroDAO;
+import database.MeGustaDAO;
+import database.UsuarioDAO;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import model.Anime;
+import model.Capitulo;
+
 /**
  *
  * @author Usuario
  */
 public class ModificarCap extends javax.swing.JFrame {
 
+    
+    private UsuarioDAO usuarioDAO;
+    private AnimeDAO animeDAO;
+    private CapituloDAO capituloDAO;
+    private CategoriaDAO categoriaDAO;
+    private GeneroDAO generoDAO;
+    private int idUsuario;
+    private int idCapitulo;
+    private List<Anime> animes;
+    private int codAnime;
+    private Animes animesInstance;
+    private AñadirCap añadirCapInstance;
+
     /**
      * Creates new form ModificarCap
      */
     public ModificarCap() {
         initComponents();
+        usuarioDAO = new UsuarioDAO();
+        animeDAO = new AnimeDAO();
+        capituloDAO = new CapituloDAO();
+        categoriaDAO = new CategoriaDAO();
+        generoDAO = new GeneroDAO();
+        animes = new ArrayList<>(); // Inicializar la lista animes
+        cargarComboAnimes();
     }
+
+    public ModificarCap(int idUsuario, int idCapitulo, int codAnime, Animes animesInstance, AñadirCap añadirCapInstance){
+        initComponents();
+        this.idUsuario = idUsuario;
+        this.idCapitulo = idCapitulo;
+        this.codAnime = codAnime;
+        this.animesInstance = animesInstance;
+        this.añadirCapInstance = añadirCapInstance;
+        usuarioDAO = new UsuarioDAO();
+        animeDAO = new AnimeDAO();
+        capituloDAO = new CapituloDAO();
+        categoriaDAO = new CategoriaDAO();
+        generoDAO = new GeneroDAO();
+        animes = new ArrayList<>(); // Inicializar la lista animes
+        cargarComboAnimes();
+        cargarDatosCapitulo(idCapitulo);
+    }
+
+   
+    public void cargarComboAnimes() {
+        // Borrar los elementos existentes en el ComboBox
+        AnimeCombox.removeAllItems();
+
+        // Agregar una opción predeterminada al ComboBox
+        AnimeCombox.addItem("Elija uno");
+
+        // Obtener todos los animes directamente desde la base de datos y agregarlos al ComboBox
+        animes = animeDAO.obtenerAnimes(); // Llenar la lista animes
+        for (Anime anime : animes) {
+            AnimeCombox.addItem(anime.getNombre()); // Agregar el nombre del anime al ComboBox
+        }
+    }
+
+    private int obtenerAnimeIdSeleccionado(JComboBox<String> comboBox) {
+        String selectedAnimeName = (String) comboBox.getSelectedItem();
+        if (selectedAnimeName != null && !selectedAnimeName.equals("Elija uno")) {
+            for (Anime anime : animes) {
+                if (anime.getNombre().equals(selectedAnimeName)) {
+                    return anime.getIdAnime();
+                }
+            }
+        }
+        return -1; // O algún valor por defecto si no se selecciona un anime válido
+    }
+
+    public void cargarDatosCapitulo(int idCapitulo) {
+        // Obtener el capítulo desde la base de datos utilizando el DAO
+        Capitulo capitulo = capituloDAO.obtenerCapituloPorId(idCapitulo);
+        // Verificar si se encontró el capítulo
+        if (capitulo != null) {
+            // Obtener el nombre del anime del capítulo
+            String nombreAnimeCapitulo = capitulo.getAnime().getNombre();
+            // Iterar sobre la lista de animes y buscar el que coincida con el nombre del anime del capítulo
+            for (Anime anime : animes) {
+                if (anime.getNombre().equals(nombreAnimeCapitulo)) {
+                    // Seleccionar el anime en el ComboBox
+                    AnimeCombox.setSelectedItem(anime.getNombre());
+                    break;
+                }
+            }
+            // Mostrar los otros datos del capítulo en los campos correspondientes
+            numeroCapitulo.setText(String.valueOf(capitulo.getNumeroCapitulo()));
+            tituloCap.setText(capitulo.getTitulo());
+            duracionCap.setText(String.valueOf(capitulo.getDuracion()));
+        } else {
+            // El capítulo no se encontró en la base de datos
+            JOptionPane.showMessageDialog(this, "El capítulo no se encontró.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+/*
+    private void actualizarDatosCapitulo(int idCapitulo) {
+        String nombreCapitulo = tituloCap.getText();
+        int numeroCap = Integer.parseInt(numeroCapitulo.getText());
+        int duracion = Integer.parseInt(duracionCap.getText());
+        int nuevoAnimeId = obtenerAnimeIdSeleccionado(AnimeCombox);
+
+        // Crear un objeto Capitulo con los nuevos datos y el ID del capítulo
+        Capitulo capituloActualizado = new Capitulo(idCapitulo, nuevoAnimeId, nombreCapitulo, numeroCap, duracion);
+
+        // Actualizar los datos del capítulo en la base de datos
+        boolean actualizacionExitosa = capituloDAO.actualizarCapitulo(capituloActualizado);
+
+        if (actualizacionExitosa) {
+            JOptionPane.showMessageDialog(this, "Datos del capítulo actualizados correctamente.");
+            if (animesInstance != null) {
+                animesInstance.actualizarTable();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al actualizar los datos del capítulo.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }*/
+    
+      private void actualizarDatosCapitulo(int idCapitulo) {
+          
+        String nombreCapitulo = tituloCap.getText();
+        int numeroCap = Integer.parseInt(numeroCapitulo.getText());
+        int duracion = Integer.parseInt(duracionCap.getText());
+        int nuevoAnimeId = obtenerAnimeIdSeleccionado(AnimeCombox);
+
+        // Crear un objeto Capitulo con los nuevos datos y el ID del capítulo
+        Capitulo capituloActualizado = new Capitulo(idCapitulo, nuevoAnimeId, nombreCapitulo, numeroCap, duracion);
+
+        // Actualizar los datos del capítulo en la base de datos
+        boolean actualizacionExitosa = capituloDAO.actualizarCapitulo(capituloActualizado);
+
+        if (actualizacionExitosa) {
+            JOptionPane.showMessageDialog(this, "Datos del capítulo actualizados correctamente.");
+            if (animesInstance != null) {
+                animesInstance.actualizarTable();
+            }
+            if (añadirCapInstance != null && añadirCapInstance.isVisible()) {
+                añadirCapInstance.actualizarTable();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al actualizar los datos del capítulo.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+}
+
+
+
+
+
+
+
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -37,7 +197,13 @@ public class ModificarCap extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         AnimeCombox = new javax.swing.JComboBox<>();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        numeroCapitulo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                numeroCapituloActionPerformed(evt);
+            }
+        });
 
         jButton1.setText("Modificar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -117,12 +283,18 @@ public class ModificarCap extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-
+       actualizarDatosCapitulo(idCapitulo);
+       this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void numeroCapituloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_numeroCapituloActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_numeroCapituloActionPerformed
 
     /**
      * @param args the command line arguments
