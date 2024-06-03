@@ -40,6 +40,7 @@ public class Animes extends javax.swing.JFrame {
     private int codAnime;
     private boolean meGusta;
     private AñadirCap añadirCapInstance;
+    private MeGustas meGustasInstance;
     
     /**
      * Creates new form NewJFrame1
@@ -66,14 +67,35 @@ public class Animes extends javax.swing.JFrame {
         capituloDAO = new CapituloDAO();
         meGustaDAO = new MeGustaDAO();
         
-        
-        
-        
-        
         mostrarInformacionAnime();
         actualizarTable();
         mostrarEstadoMeGusta();
      
+    }
+    
+    public Animes(MeGustas meGustasFrame, int idUsuario, int codAnime) {
+    initComponents();
+        this.codAnime = codAnime; // Almacena la identificación del anime
+        System.out.println(codAnime);
+        
+        this.idUsuario = idUsuario;
+        System.out.println(idUsuario);
+        this.meGustasInstance  = meGustasFrame;
+        usuarioDAO = new UsuarioDAO();
+        animeDAO = new AnimeDAO(); // Asegúrate de inicializar animeDAO
+        capituloDAO = new CapituloDAO();
+        meGustaDAO = new MeGustaDAO();
+        
+        mostrarInformacionAnime();
+        actualizarTable();
+        mostrarEstadoMeGusta();
+    
+    }   
+    
+    
+    
+    private void actualizarTablaMeGustas() {
+    meGustasInstance.actualizarTable();
     }
     
     public int obtenerIdUsuario() {
@@ -188,11 +210,15 @@ public class Animes extends javax.swing.JFrame {
 }
 
 
-    private void actualizarEstadoMeGusta() {
+        private void actualizarEstadoMeGusta() {
         meGusta = !meGusta;
         actualizarIconoMeGusta();
         meGustaDAO.actualizarMeGusta(idUsuario, codAnime, meGusta);
+
+        // Llama al método actualizarTablaMeGustas() en la instancia de MeGustas
+        meGustasInstance.actualizarTable();
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.

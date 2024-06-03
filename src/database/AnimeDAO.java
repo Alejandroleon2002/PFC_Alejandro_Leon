@@ -55,6 +55,48 @@ public class AnimeDAO {
         return listaAnimes;
     }
    
+   public List<Anime> listarAnimesConMeGusta(int idUsuario) {
+       
+        List<Anime> listaAnimes = new ArrayList<>();
+        String sql = "SELECT A.nombre, A.anyo, A.director, A.estudio, C.nombre AS nombre_categoria, G.nombre AS nombre_genero, A.anime_id, A.descripcion " +
+                     "FROM Anime A " +
+                     "JOIN Categoria C ON A.id_categoria = C.categoria_id " +
+                     "JOIN Genero G ON A.id_genero = G.genero_id " +
+                     "JOIN MeGusta MG ON A.anime_id = MG.anime_id " +
+                     "WHERE MG.usuario_id = ? AND MG.me_gusta = TRUE";
+
+        try (Connection con = Conexion.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Anime anime = new Anime();
+                anime.setNombre(rs.getString("nombre"));
+                anime.setAnyo(rs.getInt("anyo"));
+                anime.setDirector(rs.getString("director"));
+                anime.setEstudio(rs.getString("estudio"));
+                Categoria categoria = new Categoria();
+                categoria.setNombre(rs.getString("nombre_categoria"));
+                anime.setCategoria(categoria);
+                Genero genero = new Genero();
+                genero.setNombre(rs.getString("nombre_genero"));
+                anime.setGenero(genero);
+                anime.setIdAnime(rs.getInt("anime_id"));
+                anime.setDescripcion(rs.getString("descripcion"));
+                listaAnimes.add(anime);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+        return listaAnimes;
+ }
+   
+   
+   
    public List<Anime> listar() {
     List<Anime> animes = new ArrayList<>();
     String sql = "SELECT * FROM anime";
@@ -207,6 +249,36 @@ public class AnimeDAO {
     }
 }
    
+      
+
+
+
+        public Integer insertarAnimeYObtenerID(Anime anime) {
+            try (Connection connection = Conexion.obtenerConexion();
+                 PreparedStatement ps = connection.prepareStatement(INSERT_QUERY, PreparedStatement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, anime.getNombre());
+                ps.setInt(2, anime.getAnyo());
+                ps.setString(3, anime.getDescripcion());
+                ps.setString(4, anime.getDirector());
+                ps.setString(5, anime.getEstudio());
+                ps.setInt(6, anime.getIdCategoria());
+                ps.setInt(7, anime.getIdGenero());
+
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected == 1) {
+                    ResultSet generatedKeys = ps.getGeneratedKeys();
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1);
+                    }
+                }
+            } catch (SQLException e) {
+                System.out.println("Error al insertar anime: " + e.getMessage());
+            }
+            return null;
+        }
+
+       
+       
     public boolean guardar(Anime anime) {
         String sql = "INSERT INTO anime (nombre, descripcion, anyo, director, estudio,  id_categoria, id_genero) VALUES (?, ?, ?, ?, ?, ?, ?)";
         

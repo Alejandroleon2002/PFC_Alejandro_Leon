@@ -11,10 +11,22 @@ import database.CategoriaDAO;
 import database.GeneroDAO;
 import database.MeGustaDAO;
 import database.UsuarioDAO;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import model.Anime;
 import model.Categoria;
 import model.Genero;
@@ -36,7 +48,7 @@ public class Añadir extends javax.swing.JFrame {
     private int codAnime;
     private boolean meGusta;
     private Admin adminInstance;
-    
+    private String rutaImagenSeleccionada = "";
     
     
     /**
@@ -133,71 +145,94 @@ public class Añadir extends javax.swing.JFrame {
     table1.getColumnModel().getColumn(7).setWidth(0);
 }
         
-        private void guardarAnime() {
-        String nombre = txtNombre.getText();
-        String anyoStr = txtAnyo.getText();
-        String descripcion = txtDescripcion.getText();
-        String director = txtDirector.getText();
-        String estudio = txtEstudio.getText();
+    
+    
+    
+    
+    private void guardarAnime() {
+    String nombre = txtNombre.getText();
+    String anyoStr = txtAnyo.getText();
+    String descripcion = txtDescripcion.getText();
+    String director = txtDirector.getText();
+    String estudio = txtEstudio.getText();
 
-        if (nombre.isEmpty() || anyoStr.isEmpty() || descripcion.isEmpty() || director.isEmpty() || estudio.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    if (nombre.isEmpty() || anyoStr.isEmpty() || descripcion.isEmpty() || director.isEmpty() || estudio.isEmpty() || rutaImagenSeleccionada.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Todos los campos, incluida la imagen, son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        int anyo;
-        try {
-            anyo = Integer.parseInt(anyoStr);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "El año debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    int anyo;
+    try {
+        anyo = Integer.parseInt(anyoStr);
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "El año debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        String nombreCategoria = (String) comboCategoria.getSelectedItem();
-        String nombreGenero = (String) comboGenero.getSelectedItem();
+    String nombreCategoria = (String) comboCategoria.getSelectedItem();
+    String nombreGenero = (String) comboGenero.getSelectedItem();
 
-        if (nombreCategoria == null || nombreGenero == null || nombreCategoria.equals("Elija uno") || nombreGenero.equals("Elija uno")) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar una categoría y un género.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    if (nombreCategoria == null || nombreGenero == null || nombreCategoria.equals("Elija uno") || nombreGenero.equals("Elija uno")) {
+        JOptionPane.showMessageDialog(this, "Debe seleccionar una categoría y un género.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        int idCategoria = categoriaDAO.obtenerIdCategoriaPorNombre(nombreCategoria);
-        int idGenero = generoDAO.obtenerIdGeneroPorNombre(nombreGenero);
+    int idCategoria = categoriaDAO.obtenerIdCategoriaPorNombre(nombreCategoria);
+    int idGenero = generoDAO.obtenerIdGeneroPorNombre(nombreGenero);
 
-        if (idCategoria == -1 || idGenero == -1) {
-            JOptionPane.showMessageDialog(this, "La categoría o el género seleccionados no son válidos.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    if (idCategoria == -1 || idGenero == -1) {
+        JOptionPane.showMessageDialog(this, "La categoría o el género seleccionados no son válidos.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        Anime anime = new Anime(nombre, anyo, descripcion, director, estudio, idCategoria, idGenero);
+    // Crear un objeto Anime con los datos ingresados
+    Anime anime = new Anime(nombre, anyo, descripcion, director, estudio, idCategoria, idGenero);
 
-        boolean success = animeDAO.insertarAnime(anime);
+    // Insertar el anime en la base de datos
+    Integer idAnimeInsertado = animeDAO.insertarAnimeYObtenerID(anime);
 
-        if (success) {
-            JOptionPane.showMessageDialog(this, "Anime agregado exitosamente!");
+    if (idAnimeInsertado != null) {
+        JOptionPane.showMessageDialog(this, "Anime agregado exitosamente!");
 
-            // Limpiar campos de texto
-            txtAnyo.setText("");
-            txtDirector.setText("");
-            txtEstudio.setText("");
-            txtNombre.setText("");
-            txtDescripcion.setText("");
-            comboCategoria.setSelectedIndex(0);
-            comboGenero.setSelectedIndex(0);
-            
-            
+        // Limpiar campos de texto
+        txtAnyo.setText("");
+        txtDirector.setText("");
+        txtEstudio.setText("");
+        txtNombre.setText("");
+        txtDescripcion.setText("");
+        comboCategoria.setSelectedIndex(0);
+        comboGenero.setSelectedIndex(0);
 
-            if (adminInstance != null) {
-                adminInstance.actualizarTable();
-                
+        // Añadir la imagen a la carpeta de imágenes con el ID del anime como nombre
+        if (!rutaImagenSeleccionada.isEmpty()) {
+            try {
+                // Obtener la ruta absoluta del directorio del proyecto
+                String projectDir = System.getProperty("user.dir");
+
+                // Construir la ruta de destino con el ID del anime como nombre
+                Path destinationPath = Paths.get(projectDir, "src", "imagenes", idAnimeInsertado + ".jpg");
+
+                // Copiar el archivo
+                Files.copy(Paths.get(rutaImagenSeleccionada), destinationPath, StandardCopyOption.REPLACE_EXISTING);
+
+                rutaImagenSeleccionada = "";
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error al añadir la imagen: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-
-        } else {
-            JOptionPane.showMessageDialog(this, "Error al agregar anime.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+        if (adminInstance != null) {
+            adminInstance.actualizarTable();
+        }
+
+    } else {
+        JOptionPane.showMessageDialog(this, "Error al agregar anime.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
 }
 
+        
+        
         public void actualizarTables() {
             
             System.out.println("Actualizando tabla en Añadir");
@@ -216,6 +251,30 @@ public class Añadir extends javax.swing.JFrame {
             table1.getColumnModel().getColumn(7).setMaxWidth(0);
             table1.getColumnModel().getColumn(7).setWidth(0);
 }
+
+        
+   private void cargarYCopiarImagen() {
+    JFileChooser fileChooser = new JFileChooser();
+    int result = fileChooser.showOpenDialog(null);
+    if (result == JFileChooser.APPROVE_OPTION) {
+        File imageFile = fileChooser.getSelectedFile();
+
+        // Verificar si el archivo tiene la extensión .jpg
+        if (!imageFile.getName().toLowerCase().endsWith(".jpg")) {
+            JOptionPane.showMessageDialog(this, "El archivo seleccionado no es un archivo JPG.", "Error de formato", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Guardar la ruta de la imagen seleccionada
+        rutaImagenSeleccionada = imageFile.getAbsolutePath();
+        JOptionPane.showMessageDialog(this, "Imagen añadida");
+    }
+}
+
+
+
+
+
 
 
 
@@ -249,6 +308,7 @@ public class Añadir extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         comboCategoria = new javax.swing.JComboBox<>();
         comboGenero = new javax.swing.JComboBox<>();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -312,6 +372,13 @@ public class Añadir extends javax.swing.JFrame {
 
         comboGenero.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
+        jButton3.setText("Seleccionar imagen");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -341,9 +408,12 @@ public class Añadir extends javax.swing.JFrame {
                                 .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(48, 48, 48)
-                        .addComponent(jButton1)
-                        .addGap(26, 26, 26)
-                        .addComponent(jButton2)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton3)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton1)
+                                .addGap(26, 26, 26)
+                                .addComponent(jButton2)))))
                 .addGap(121, 121, 121)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -392,7 +462,9 @@ public class Añadir extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
                             .addComponent(txtEstudio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(122, 122, 122)
+                        .addGap(59, 59, 59)
+                        .addComponent(jButton3)
+                        .addGap(36, 36, 36)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton1)
                             .addComponent(jButton2))))
@@ -487,6 +559,11 @@ public class Añadir extends javax.swing.JFrame {
         actualizarTables();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        cargarYCopiarImagen();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -527,6 +604,7 @@ public class Añadir extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> comboGenero;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
