@@ -58,7 +58,7 @@ public class MeGustaDAO {
         updateStatement.setInt(3, codAnime);
         int rowsUpdated = updateStatement.executeUpdate();
         if (rowsUpdated == 0) {
-            // Si no se actualizó ninguna fila, significa que no existe el registro, entonces insertamos uno nuevo
+
             insertarMeGusta(idUsuario, codAnime, meGusta);
         }
     } catch (SQLException e) {

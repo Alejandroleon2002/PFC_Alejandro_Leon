@@ -13,7 +13,7 @@ public class Genero {
     private String nombre;
 
     public Genero() {
-        // Constructor por defecto
+
     }
     
     public Genero(String nombre) {

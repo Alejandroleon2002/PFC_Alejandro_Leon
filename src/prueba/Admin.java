@@ -76,7 +76,6 @@ public class Admin extends javax.swing.JFrame {
         model.setAnimes(animes);
         table1.setModel(model);
 
-        // Ocultar la columnas
         table1.getColumnModel().getColumn(6).setMinWidth(0);
         table1.getColumnModel().getColumn(6).setMaxWidth(0);
         table1.getColumnModel().getColumn(6).setWidth(0);
@@ -416,7 +415,7 @@ public class Admin extends javax.swing.JFrame {
             int idUsuario = obtenerIdUsuario();
             System.out.println(idUsuario); 
             
-           Modificar ventanaModificar = new Modificar(idUsuario, codAnime, this, ventanaAñadir); // Pasar la instancia de "Admin"
+           Modificar ventanaModificar = new Modificar(idUsuario, codAnime, this, ventanaAñadir);
             ventanaModificar.setVisible(true);
             
             jTextField1.setText("");
@@ -498,17 +497,17 @@ public class Admin extends javax.swing.JFrame {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         
-        int idUsuario = this.idUsuario; // O el valor correcto de ID del usuario
-        int codAnime = this.codAnime; // O el valor correcto del código del anime
+        int idUsuario = this.idUsuario;
+        int codAnime = this.codAnime;
 
-        Añadir añ = new Añadir(idUsuario, codAnime, this); // Pasa la referencia de Admin
+        Añadir añ = new Añadir(idUsuario, codAnime, this);
         añ.setVisible(true);
 
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
-       AñadirCap ap = new AñadirCap(idUsuario, codAnime, this); // Pasa la referencia de Admin
+       AñadirCap ap = new AñadirCap(idUsuario, codAnime, this);
         ap.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 

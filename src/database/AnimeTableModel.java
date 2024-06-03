@@ -19,11 +19,11 @@ public class AnimeTableModel extends AbstractTableModel {
     public Class<?> getColumnClass(int columnIndex) {
         switch (columnIndex) {
             
-            case 8: // Agregar una nueva columna para detalles
+            case 8:
                 return ImageIcon.class;
-                case 9: // Agregar una nueva columna para detalles
+                case 9:
                 return ImageIcon.class;
-                 case 10: // Agregar una nueva columna para detalles
+                 case 10:
                 return ImageIcon.class;
             default:
                 return Object.class;

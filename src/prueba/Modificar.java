@@ -42,12 +42,12 @@ public class Modificar extends javax.swing.JFrame {
         animeDAO = new AnimeDAO();
         capituloDAO = new CapituloDAO();
         categoriaDAO = new CategoriaDAO();
-        generoDAO = new GeneroDAO(); // Asegúrate de inicializar generoDAO
+        generoDAO = new GeneroDAO();
 }
 
     public Modificar(int idUsuario, int codAnime, Admin admin, Añadir ventanaAñadir) {
         initComponents();
-        this.adminInstance = admin; // Asignar la instancia de Admin
+        this.adminInstance = admin;
         this.ventanaAñadir = ventanaAñadir;
         this.codAnime = codAnime;
         this.idUsuario = idUsuario;
@@ -55,31 +55,27 @@ public class Modificar extends javax.swing.JFrame {
         animeDAO = new AnimeDAO();
         capituloDAO = new CapituloDAO();
         categoriaDAO = new CategoriaDAO();
-        generoDAO = new GeneroDAO(); // Asegúrate de inicializar generoDAO
+        generoDAO = new GeneroDAO();
         cargarDatosAnime(codAnime);
         cargarComboBoxes();
 }
     
         public void cargarComboBoxes() {
-        // Borrar los elementos existentes en los ComboBoxes
+
         datoCateg.removeAllItems();
         datoGenero.removeAllItems();
 
-        // Obtener todas las categorías y géneros
         List<Categoria> categorias = categoriaDAO.obtenerCategorias();
         List<Genero> generos = generoDAO.obtenerTodosLosGeneros();
 
-        // Agregar las nuevas categorías al ComboBox datoCateg
         for (Categoria categoria : categorias) {
             datoCateg.addItem(categoria.getNombre());
         }
 
-        // Agregar los nuevos géneros al ComboBox datoGenero
         for (Genero genero : generos) {
             datoGenero.addItem(genero.getNombre());
         }
 
-        // Obtener el anime correspondiente al código y seleccionar su categoría y género en los ComboBoxes
         Anime anime = animeDAO.obtenerAnimePorId(codAnime);
         if (anime != null) {
             datoCateg.setSelectedItem(anime.getCategoria().getNombre());
@@ -98,7 +94,6 @@ public class Modificar extends javax.swing.JFrame {
             datoDirec.setText(anime.getDirector());
             datoEstud.setText(anime.getEstudio());
 
-            // Seleccionar la categoría y el género correspondiente
             datoCateg.setSelectedItem(anime.getCategoria().getNombre());
             datoGenero.setSelectedItem(anime.getGenero().getNombre());
         } else {
@@ -116,7 +111,6 @@ public class Modificar extends javax.swing.JFrame {
         String categoriaSeleccionada = (String) datoCateg.getSelectedItem();
         String generoSeleccionado = (String) datoGenero.getSelectedItem();
 
-        // Obtener el ID de la categoría y el género seleccionados
         int idCategoria = categoriaDAO.obtenerIdCategoriaPorNombre(categoriaSeleccionada);
         int idGenero = generoDAO.obtenerIdGeneroPorNombre(generoSeleccionado);
 
@@ -128,10 +122,8 @@ public class Modificar extends javax.swing.JFrame {
         Categoria categoria = new Categoria(idCategoria, categoriaSeleccionada);
         Genero genero = new Genero(idGenero, generoSeleccionado);
 
-        // Crear un objeto Anime con los nuevos datos y el ID del anime
         Anime animeActualizado = new Anime(codAnime, nombre, anyo, descripcion, director, estudio, categoria, genero);
 
-        // Actualizar los datos del anime en la base de datos
         boolean actualizacionExitosa = animeDAO.actualizarAnime(animeActualizado);
 
         if (actualizacionExitosa) {

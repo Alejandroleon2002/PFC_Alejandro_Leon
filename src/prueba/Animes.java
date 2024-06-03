@@ -56,14 +56,14 @@ public class Animes extends javax.swing.JFrame {
     public Animes(int  idUsuario, int codAnime) {
 
         initComponents();
-        this.codAnime = codAnime; // Almacena la identificación del anime
+        this.codAnime = codAnime;
         System.out.println(codAnime);
         
         this.idUsuario = idUsuario;
         System.out.println(idUsuario);
   
         usuarioDAO = new UsuarioDAO();
-        animeDAO = new AnimeDAO(); // Asegúrate de inicializar animeDAO
+        animeDAO = new AnimeDAO();
         capituloDAO = new CapituloDAO();
         meGustaDAO = new MeGustaDAO();
         
@@ -75,14 +75,14 @@ public class Animes extends javax.swing.JFrame {
     
     public Animes(MeGustas meGustasFrame, int idUsuario, int codAnime) {
     initComponents();
-        this.codAnime = codAnime; // Almacena la identificación del anime
+        this.codAnime = codAnime;
         System.out.println(codAnime);
         
         this.idUsuario = idUsuario;
         System.out.println(idUsuario);
         this.meGustasInstance  = meGustasFrame;
         usuarioDAO = new UsuarioDAO();
-        animeDAO = new AnimeDAO(); // Asegúrate de inicializar animeDAO
+        animeDAO = new AnimeDAO();
         capituloDAO = new CapituloDAO();
         meGustaDAO = new MeGustaDAO();
         
@@ -105,7 +105,7 @@ public class Animes extends javax.swing.JFrame {
    
     
     private void mostrarInformacionAnime() {
-        Anime anime = animeDAO.obtenerAnimePorId(codAnime); // Obtiene el anime por su identificación
+        Anime anime = animeDAO.obtenerAnimePorId(codAnime);
         if (anime != null) {
             lblNombre.setText(anime.getNombre());
             lblAnyo.setText(String.valueOf(anime.getAnyo()));
@@ -120,7 +120,7 @@ public class Animes extends javax.swing.JFrame {
             String imagePath = "/imagenes/" + codAnime + ".jpg";
             System.out.println("Intentando cargar la imagen desde: " + imagePath);
             
-            // Usar getResourceAsStream para cargar la imagen desde el directorio de recursos
+           
             InputStream imageStream = getClass().getResourceAsStream(imagePath);
             if (imageStream == null) {
                 throw new IllegalArgumentException("El archivo de imagen no se encontró: " + imagePath);
@@ -137,7 +137,7 @@ public class Animes extends javax.swing.JFrame {
             ex.printStackTrace();
         }
         } else {
-            // Manejar el caso en que no se encuentre el anime
+            
             System.out.println("El anime no se encontró en la base de datos.");
         }
     }
@@ -145,12 +145,12 @@ public class Animes extends javax.swing.JFrame {
     
     public void actualizarTable() {
         CapituloTableModel model = new CapituloTableModel();
-        List<Capitulo> capitulos = capituloDAO.listarCapitulosPorAnime(codAnime); // Asegúrate de tener un método para obtener todos los capítulos en tu CapituloDAO
+        List<Capitulo> capitulos = capituloDAO.listarCapitulosPorAnime(codAnime);
         model.setCapitulos(capitulos);
         table1.setModel(model);
 
 
-        // Ocultar la columnas
+
         table1.getColumnModel().getColumn(0).setMinWidth(0);
         table1.getColumnModel().getColumn(0).setMaxWidth(0);
         table1.getColumnModel().getColumn(0).setWidth(0);
@@ -162,7 +162,7 @@ public class Animes extends javax.swing.JFrame {
         String nombreUsuario = usuarioDAO.obtenerNombreUsuario(idUsuario);
 
         if (!"admin".equalsIgnoreCase(nombreUsuario)) {
-        // Ocultar las columnas 6 y 7 si el usuario no es administrador
+
         table1.getColumnModel().getColumn(6).setMinWidth(0);
         table1.getColumnModel().getColumn(6).setMaxWidth(0);
         table1.getColumnModel().getColumn(6).setWidth(0);
@@ -190,10 +190,10 @@ public class Animes extends javax.swing.JFrame {
         }
 
         try {
-            // Depuración: Imprimir la ruta del archivo
+
             System.out.println("Intentando cargar la imagen desde: " + imagePath);
 
-            // Usar getResourceAsStream para cargar la imagen desde el directorio de recursos
+
             InputStream imageStream = getClass().getResourceAsStream(imagePath);
             if (imageStream == null) {
                 throw new IllegalArgumentException("El archivo de imagen no se encontró: " + imagePath);
@@ -215,7 +215,6 @@ public class Animes extends javax.swing.JFrame {
         actualizarIconoMeGusta();
         meGustaDAO.actualizarMeGusta(idUsuario, codAnime, meGusta);
 
-        // Llama al método actualizarTablaMeGustas() en la instancia de MeGustas
         meGustasInstance.actualizarTable();
     }
 
@@ -419,25 +418,23 @@ public class Animes extends javax.swing.JFrame {
                     Capitulos C = new Capitulos(idUsuario, codiCap , codiAnime);
                     C.setVisible(true);
                 }
-                if (table1.getSelectedColumn() == 6) { // Si se hace clic en el índice 6 (índice de la columna para modificar)
-                int idCapitulo = (int) table1.getValueAt(fila, 0); // Suponiendo que el ID del capítulo está en la primera columna
+                if (table1.getSelectedColumn() == 6) {
+                int idCapitulo = (int) table1.getValueAt(fila, 0);
                 System.out.println(idCapitulo); 
 
-                ModificarCap mc = new ModificarCap(idUsuario, idCapitulo, codAnime,this,añadirCapInstance); // Crear una instancia del frame ModificarCap
-                mc.setVisible(true); // Mostrar el frame ModificarCap
+                ModificarCap mc = new ModificarCap(idUsuario, idCapitulo, codAnime,this,añadirCapInstance);
+                mc.setVisible(true);
             }
-                if (table1.getSelectedColumn() == 7) { // 7 es el índice de la columna de la papelera
-            int idCapitulo = (int) table1.getValueAt(table1.getSelectedRow(), 0); // Suponiendo que el ID del capítulo está en la primera columna
+                if (table1.getSelectedColumn() == 7) {
+            int idCapitulo = (int) table1.getValueAt(table1.getSelectedRow(), 0);
 
-            // Preguntar al usuario si realmente desea eliminar el capítulo
             int opcion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que deseas eliminar este capítulo?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
             if (opcion == JOptionPane.YES_OPTION) {
-                CapituloDAO capituloDAO = new CapituloDAO(); // Crea una instancia del DAO
-                boolean eliminado = capituloDAO.eliminarCapitulo(idCapitulo); // Llama al método para eliminar el capítulo
+                CapituloDAO capituloDAO = new CapituloDAO();
+                boolean eliminado = capituloDAO.eliminarCapitulo(idCapitulo);
                 if (eliminado) {
                     JOptionPane.showMessageDialog(this, "Capítulo eliminado exitosamente.");
-                    // Actualiza la tabla de capítulos si es necesario
-                    // Por ejemplo:
+                  
                     actualizarTable();
                 } else {
                     JOptionPane.showMessageDialog(this, "Error al eliminar el capítulo.", "Error", JOptionPane.ERROR_MESSAGE);

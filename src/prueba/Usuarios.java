@@ -19,11 +19,16 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.Enumeration;
 import java.util.List;
+import javax.help.HelpBroker;
+import javax.help.HelpSet;
+import javax.help.HelpSetException;
+import javax.help.JHelp;
 import javax.swing.AbstractButton;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 import model.Anime;
+
 
 /**
  *
@@ -46,6 +51,18 @@ public class Usuarios extends javax.swing.JFrame {
         animeDAO = new AnimeDAO();
         categoriaDAO = new CategoriaDAO();
         generoDAO = new GeneroDAO();
+        
+        String AYUDA_HS = "ayuda/conayuda/helpset.hs";
+        try {
+         ClassLoader cl = getClass().getClassLoader();
+         HelpSet helpset = new HelpSet(cl, cl.getResource(AYUDA_HS));
+         HelpBroker hb = helpset.createHelpBroker();
+         JHelp jhelp = new JHelp(helpset);
+         hb.enableHelpOnButton(jMenuItem1, "Acerca del PFC", helpset);
+
+        } catch (HelpSetException ex) {
+            System.err.println("Error al cargar la ayuda: " + ex);
+        }
         
         
     }
@@ -73,8 +90,6 @@ public class Usuarios extends javax.swing.JFrame {
         model.setAnimes(animes);
         table1.setModel(model);
 
-        
-        // Ocultar la columnas
         table1.getColumnModel().getColumn(6).setMinWidth(0);
         table1.getColumnModel().getColumn(6).setMaxWidth(0);
         table1.getColumnModel().getColumn(6).setWidth(0);
@@ -163,6 +178,11 @@ public class Usuarios extends javax.swing.JFrame {
         jComboBox3 = new javax.swing.JComboBox<>();
         jComboBox4 = new javax.swing.JComboBox<>();
         jButton2 = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -239,6 +259,21 @@ public class Usuarios extends javax.swing.JFrame {
             }
         });
 
+        jMenu1.setText("Apariencia");
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Información");
+        jMenuBar1.add(jMenu2);
+
+        jMenu3.setText("Ayuda");
+
+        jMenuItem1.setText("Ayuda");
+        jMenu3.add(jMenuItem1);
+
+        jMenuBar1.add(jMenu3);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -304,7 +339,7 @@ public class Usuarios extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 221, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 198, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton1)
                             .addComponent(jButton2))
@@ -477,6 +512,11 @@ public class Usuarios extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;

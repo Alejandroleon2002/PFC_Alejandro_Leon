@@ -66,7 +66,7 @@ public class AñadirCap extends javax.swing.JFrame {
     }
         public AñadirCap(int idUsuario, int codAnime, Animes animesFrame) {
         initComponents();
-        this.animesFrame = animesFrame; // Asigna la referencia a Animes
+        this.animesFrame = animesFrame;
         this.idUsuario = idUsuario;
         this.codAnime = codAnime;
         this.añadirCapInstance = añadirCapInstance;
@@ -129,8 +129,6 @@ public class AñadirCap extends javax.swing.JFrame {
         model.setCapitulos(capitulos);
         table1.setModel(model);
 
-
-        // Ocultar la columnas
         table1.getColumnModel().getColumn(0).setMinWidth(0);
         table1.getColumnModel().getColumn(0).setMaxWidth(0);
         table1.getColumnModel().getColumn(0).setWidth(0);
@@ -151,7 +149,7 @@ public class AñadirCap extends javax.swing.JFrame {
        for (Anime anime : animes) {
            AnimeCombox.addItem(anime.getNombre());
        }
-       // Guardar la lista de animes para usar sus IDs más tarde
+
        this.animes = animes;
     }
         
@@ -161,26 +159,26 @@ public class AñadirCap extends javax.swing.JFrame {
       private int obtenerIdAnimeSeleccionado() {
         String nombreSeleccionado = (String) AnimeCombox.getSelectedItem();
         if (nombreSeleccionado == null || nombreSeleccionado.equals("Elija uno")) {
-            return -1; // Valor para indicar que no se ha seleccionado un anime válido
+            return -1;
         }
         for (Anime anime : animes) {
             if (anime.getNombre().equals(nombreSeleccionado)) {
                 return anime.getIdAnime();
             }
         }
-        return -1; // Si no se encuentra el anime (no debería pasar)
+        return -1;
     }
 
       
       private void filtrarCapitulosPorAnime(int animeId) {
         if (animeId != -1) {
-            // Obtener los capítulos por el ID del anime
+           
             List<Capitulo> capitulos = capituloDAO.listarCapitulosPorAnime(animeId);
-            // Actualizar la tabla con los nuevos capítulos
+           
             CapituloTableModel model = new CapituloTableModel();
             model.setCapitulos(capitulos);
             table1.setModel(model);
-            // Ocultar la columnas
+            
         table1.getColumnModel().getColumn(0).setMinWidth(0);
         table1.getColumnModel().getColumn(0).setMaxWidth(0);
         table1.getColumnModel().getColumn(0).setWidth(0);
@@ -232,7 +230,7 @@ public class AñadirCap extends javax.swing.JFrame {
 
         capituloDAO.insertarCapitulo(capitulo);
         JOptionPane.showMessageDialog(this, "Capítulo añadido exitosamente.");
-        actualizarTable(); // Actualizar la tabla después de añadir el capítulo
+        actualizarTable();
         
         numeroCapitulo.setText("");
         duracionCap.setText("");
@@ -417,22 +415,20 @@ public class AñadirCap extends javax.swing.JFrame {
             int idCapitulo = (int) table1.getValueAt(fila, 0);
             System.out.println(idCapitulo); 
 
-            // Crear una instancia del frame ModificarCap, pasando la referencia de la instancia de Animes
             ModificarCap mc = new ModificarCap(idUsuario, idCapitulo, codAnime, animesFrame,this);
-            mc.setVisible(true); // Mostrar el frame ModificarCap
+            mc.setVisible(true);
         }
-        if (table1.getSelectedColumn() == 7) { // 7 es el índice de la columna de la papelera
-    int idCapitulo = (int) table1.getValueAt(table1.getSelectedRow(), 0); // Suponiendo que el ID del capítulo está en la primera columna
+        if (table1.getSelectedColumn() == 7) {
+    int idCapitulo = (int) table1.getValueAt(table1.getSelectedRow(), 0);
 
     // Preguntar al usuario si realmente desea eliminar el capítulo
     int opcion = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que deseas eliminar este capítulo?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
     if (opcion == JOptionPane.YES_OPTION) {
-        CapituloDAO capituloDAO = new CapituloDAO(); // Crea una instancia del DAO
-        boolean eliminado = capituloDAO.eliminarCapitulo(idCapitulo); // Llama al método para eliminar el capítulo
+        CapituloDAO capituloDAO = new CapituloDAO();
+        boolean eliminado = capituloDAO.eliminarCapitulo(idCapitulo);
         if (eliminado) {
             JOptionPane.showMessageDialog(this, "Capítulo eliminado exitosamente.");
-            // Actualiza la tabla de capítulos si es necesario
-            // Por ejemplo:
+
             actualizarTable();
         } else {
             JOptionPane.showMessageDialog(this, "Error al eliminar el capítulo.", "Error", JOptionPane.ERROR_MESSAGE);

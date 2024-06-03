@@ -14,7 +14,7 @@ public class Categoria {
     
     
     public Categoria() {
-        // Constructor por defecto
+
     }
 
     public Categoria(String nombre) {

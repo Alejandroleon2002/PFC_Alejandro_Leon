@@ -215,8 +215,8 @@ public class AnimeDAO {
                 anime.setAnyo(rs.getInt(2));
                 anime.setDirector(rs.getString(3));
                 anime.setEstudio(rs.getString(4));
-                anime.setCategoria(new Categoria(rs.getString(5))); // Usamos el constructor adecuado de Categoria
-                anime.setGenero(new Genero(rs.getString(6))); // Usamos el constructor adecuado de Genero
+                anime.setCategoria(new Categoria(rs.getString(5)));
+                anime.setGenero(new Genero(rs.getString(6)));
                 anime.setIdAnime(rs.getInt(7));
                 anime.setDescripcion(rs.getString(8));
                 animes.add(anime);
@@ -339,19 +339,15 @@ public class AnimeDAO {
          PreparedStatement psCapitulos = con.prepareStatement(sqlCapitulos);
          PreparedStatement psAnime = con.prepareStatement(sqlAnime)) {
 
-        // Eliminar las filas en MeGusta asociadas
         psMeGusta.setInt(1, idAnime);
         psMeGusta.executeUpdate();
 
-        // Eliminar los comentarios asociados
         psComentarios.setInt(1, idAnime);
         psComentarios.executeUpdate();
 
-        // Eliminar los capítulos asociados
         psCapitulos.setInt(1, idAnime);
         psCapitulos.executeUpdate();
 
-        // Eliminar el anime
         psAnime.setInt(1, idAnime);
         int rowsAffected = psAnime.executeUpdate();
         return rowsAffected > 0;

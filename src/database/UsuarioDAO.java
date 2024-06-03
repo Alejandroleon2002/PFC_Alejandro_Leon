@@ -116,7 +116,7 @@ public class UsuarioDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -1; // Si no se encontró el usuario, se devuelve -1
+        return -1;
     }
 
     public String obtenerNombreUsuario(int id) {

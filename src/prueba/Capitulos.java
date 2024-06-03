@@ -80,54 +80,6 @@ public class Capitulos extends javax.swing.JFrame {
             System.out.println("El capítulo no se encontró en la base de datos.");
         }
     }
-   /*
-   private void mostrarComentarios(List<Comentario> comentarios) {
-    JPanel panelComentariosContainer = new JPanel(); // Creamos un panel contenedor
-    
-    panelComentariosContainer.setLayout(new BoxLayout(panelComentariosContainer, BoxLayout.Y_AXIS)); // Establecemos el diseño para el contenedor
-    
-    // Variable para verificar si es el primer comentario
-    boolean primerComentario = true;
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-    // Recorre los comentarios y agrega cada uno al panel contenedor
-    for (Comentario comentario : comentarios) {
-        // Si no es el primer comentario, agrega un espacio en blanco
-        if (!primerComentario) {
-            panelComentariosContainer.add(Box.createVerticalStrut(10)); // Espacio vertical
-        } else {
-            primerComentario = false;
-        }
-
-        String usuarioFecha = comentario.getNombreUsuario() != null ? 
-            comentario.getNombreUsuario() + " - " + dateFormat.format(comentario.getFechaComentario()) : "";
-        String comentarioTexto = comentario.getComentario();
-        // Verifica si el comentario es null, y si lo es, establece una cadena vacía
-        if (comentarioTexto == null) {
-            comentarioTexto = "";
-        }
-
-        // Crea un panel para contener el nombre de usuario y la fecha
-        JPanel panelUsuarioFecha = new JPanel();
-        panelUsuarioFecha.setLayout(new BoxLayout(panelUsuarioFecha, BoxLayout.X_AXIS));
-        panelUsuarioFecha.add(new JLabel(usuarioFecha));
-
-        // Crea un label para el comentario
-        JLabel labelComentario = new JLabel(comentarioTexto);
-
-        // Agrega el panel con el nombre de usuario y la fecha, y el label del comentario al panel contenedor
-        panelComentariosContainer.add(panelUsuarioFecha);
-        panelComentariosContainer.add(labelComentario);
-    }
-
-    // Establecemos el panel contenedor como la vista del JScrollPane
-    panelComentarios.setViewportView(panelComentariosContainer);
-}
-*/
-    
-    
-
-
 
         private void mostrarComentarios(List<Comentario> comentarios) {
         JPanel panelComentariosContainer = new JPanel();
@@ -143,39 +95,32 @@ public class Capitulos extends javax.swing.JFrame {
                 comentarioTexto = "";
             }
 
-            // Panel para cada comentario con borde
             JPanel panelComentario = new JPanel();
             panelComentario.setLayout(new BoxLayout(panelComentario, BoxLayout.Y_AXIS));
             Border borde = BorderFactory.createLineBorder(Color.BLACK);
             panelComentario.setBorder(borde);
 
-            // Añadir margen alrededor del contenido del panelComentario
             panelComentario.setBorder(BorderFactory.createCompoundBorder(
                 borde,
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
             ));
 
-            // Label para usuario y fecha
             JLabel labelUsuarioFecha = new JLabel(usuarioFecha);
             labelUsuarioFecha.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            // Label para el comentario
             JLabel labelComentario = new JLabel("<html><body style='text-align: center;'>" + comentarioTexto + "</body></html>");
             labelComentario.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            // Añadir labels al panel del comentario
-            panelComentario.add(Box.createVerticalStrut(2)); // Añadir espacio vertical
+            panelComentario.add(Box.createVerticalStrut(2));
             panelComentario.add(labelUsuarioFecha);
-            panelComentario.add(Box.createVerticalStrut(10)); // Añadir espacio vertical
+            panelComentario.add(Box.createVerticalStrut(10));
             panelComentario.add(labelComentario);
-            panelComentario.add(Box.createVerticalStrut(10)); // Añadir espacio vertical
+            panelComentario.add(Box.createVerticalStrut(10));
 
-            // Añadir panel de comentario al contenedor
             panelComentariosContainer.add(panelComentario);
-            panelComentariosContainer.add(Box.createVerticalStrut(2)); // Espacio entre comentarios
+            panelComentariosContainer.add(Box.createVerticalStrut(2));
         }
 
-        // Establecemos el panel contenedor como la vista del JScrollPane
         panelComentarios.setViewportView(panelComentariosContainer);
     }
 
@@ -183,21 +128,18 @@ public class Capitulos extends javax.swing.JFrame {
 
 
     private void comentarCapitulo(String comentarioTexto) {
-    // Verificar si el texto del comentario no está vacío
+
     if (!comentarioTexto.isEmpty()) {
-        // Crear un nuevo comentario con el texto proporcionado y el ID del usuario
+
         Comentario comentario = new Comentario();
         comentario.setComentario(comentarioTexto);
         comentario.setUsuarioId(idUsuario);
 
-        // Obtener la fecha actual
         java.util.Date fechaActual = new java.util.Date();
         comentario.setFechaComentario(new java.sql.Date(fechaActual.getTime()));
 
-        // Agregar el comentario al capítulo
         capituloDAO.agregarComentario(codCap, codAnime, comentario);
 
-        // Actualizar la visualización de comentarios
         mostrarInformacionCapitulo();
     }
 }
@@ -330,8 +272,7 @@ public class Capitulos extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         String textoComentario = areaComentario.getText();
-    
-    // Llamar al método comentarCapitulo para agregar el comentario
+
     comentarCapitulo(textoComentario);
     
     areaComentario.setText("");

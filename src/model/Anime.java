@@ -20,8 +20,6 @@ public class Anime {
     private int idCategoria;
     private int idGenero;
 
-    // Getters y setters
-
     
     public Anime() {
         

@@ -31,7 +31,7 @@ public class CapituloDAO {
     } catch (SQLException e) {
         e.printStackTrace();
     }
-    return -1; // Si no se encontró el anime, se devuelve -1
+    return -1;
 }
     
     public List<Capitulo> listarCapitulosPorAnime(int idAnime) {
@@ -142,7 +142,7 @@ public class CapituloDAO {
                     anime.setNombre(rs.getString("nombre_anime"));
                     capitulo.setAnime(anime);
                     
-                    capitulo.setComentarios(obtenerComentariosPorCapitulo(codCap)); // Agrega los comentarios
+                    capitulo.setComentarios(obtenerComentariosPorCapitulo(codCap));
                      
                     return capitulo;
                 }
@@ -174,7 +174,7 @@ public class CapituloDAO {
                 anime.setNombre(rs.getString("nombre_anime"));
                 capitulo.setAnime(anime);
                 
-                capitulo.setComentarios(obtenerComentariosPorCapitulo(idCapitulo)); // Agrega los comentarios
+                capitulo.setComentarios(obtenerComentariosPorCapitulo(idCapitulo));
                  
                 return capitulo;
             }
@@ -194,11 +194,11 @@ public class CapituloDAO {
          PreparedStatement psComentarios = con.prepareStatement(sqlComentarios);
          PreparedStatement psCapitulo = con.prepareStatement(sqlCapitulo)) {
 
-        // Eliminar los comentarios asociados al capítulo
+        
         psComentarios.setInt(1, idCapitulo);
         psComentarios.executeUpdate();
 
-        // Eliminar el capítulo
+      
         psCapitulo.setInt(1, idCapitulo);
         int rowsAffected = psCapitulo.executeUpdate();
         return rowsAffected > 0;
@@ -225,7 +225,7 @@ public class CapituloDAO {
                 while (rs.next()) {
                     Comentario comentario = new Comentario();
                     comentario.setComentario(rs.getString("comentario"));
-                    comentario.setFechaComentario(rs.getDate("fecha_comentario")); // Ajusta para Date
+                    comentario.setFechaComentario(rs.getDate("fecha_comentario"));
                     comentario.setNombreUsuario(rs.getString("nombre_usuario"));
                     comentarios.add(comentario);
                 }
@@ -274,9 +274,9 @@ public class CapituloDAO {
 
         ps.executeUpdate();
     } catch (SQLException e) {
-        // Imprimir el mensaje de error
+
         System.out.println("Error al agregar comentario: " + e.getMessage());
-        e.printStackTrace(); // Esto imprimirá la traza completa del error
+        e.printStackTrace();
     }
 }
    

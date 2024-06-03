@@ -63,8 +63,7 @@ public class MeGustas extends javax.swing.JFrame {
         model.setAnimes(animes);
         table1.setModel(model);
 
-        
-        // Ocultar la columnas
+
         table1.getColumnModel().getColumn(6).setMinWidth(0);
         table1.getColumnModel().getColumn(6).setMaxWidth(0);
         table1.getColumnModel().getColumn(6).setWidth(0);

@@ -47,7 +47,7 @@ public class ModificarCap extends javax.swing.JFrame {
         capituloDAO = new CapituloDAO();
         categoriaDAO = new CategoriaDAO();
         generoDAO = new GeneroDAO();
-        animes = new ArrayList<>(); // Inicializar la lista animes
+        animes = new ArrayList<>();
         cargarComboAnimes();
     }
 
@@ -63,23 +63,20 @@ public class ModificarCap extends javax.swing.JFrame {
         capituloDAO = new CapituloDAO();
         categoriaDAO = new CategoriaDAO();
         generoDAO = new GeneroDAO();
-        animes = new ArrayList<>(); // Inicializar la lista animes
+        animes = new ArrayList<>();
         cargarComboAnimes();
         cargarDatosCapitulo(idCapitulo);
     }
 
    
     public void cargarComboAnimes() {
-        // Borrar los elementos existentes en el ComboBox
         AnimeCombox.removeAllItems();
 
-        // Agregar una opción predeterminada al ComboBox
         AnimeCombox.addItem("Elija uno");
 
-        // Obtener todos los animes directamente desde la base de datos y agregarlos al ComboBox
-        animes = animeDAO.obtenerAnimes(); // Llenar la lista animes
+        animes = animeDAO.obtenerAnimes();
         for (Anime anime : animes) {
-            AnimeCombox.addItem(anime.getNombre()); // Agregar el nombre del anime al ComboBox
+            AnimeCombox.addItem(anime.getNombre());
         }
     }
 
@@ -92,55 +89,33 @@ public class ModificarCap extends javax.swing.JFrame {
                 }
             }
         }
-        return -1; // O algún valor por defecto si no se selecciona un anime válido
+        return -1;
     }
 
     public void cargarDatosCapitulo(int idCapitulo) {
-        // Obtener el capítulo desde la base de datos utilizando el DAO
         Capitulo capitulo = capituloDAO.obtenerCapituloPorId(idCapitulo);
-        // Verificar si se encontró el capítulo
+
         if (capitulo != null) {
-            // Obtener el nombre del anime del capítulo
+
             String nombreAnimeCapitulo = capitulo.getAnime().getNombre();
-            // Iterar sobre la lista de animes y buscar el que coincida con el nombre del anime del capítulo
+
             for (Anime anime : animes) {
                 if (anime.getNombre().equals(nombreAnimeCapitulo)) {
-                    // Seleccionar el anime en el ComboBox
+
                     AnimeCombox.setSelectedItem(anime.getNombre());
                     break;
                 }
             }
-            // Mostrar los otros datos del capítulo en los campos correspondientes
+
             numeroCapitulo.setText(String.valueOf(capitulo.getNumeroCapitulo()));
             tituloCap.setText(capitulo.getTitulo());
             duracionCap.setText(String.valueOf(capitulo.getDuracion()));
         } else {
-            // El capítulo no se encontró en la base de datos
+
             JOptionPane.showMessageDialog(this, "El capítulo no se encontró.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-/*
-    private void actualizarDatosCapitulo(int idCapitulo) {
-        String nombreCapitulo = tituloCap.getText();
-        int numeroCap = Integer.parseInt(numeroCapitulo.getText());
-        int duracion = Integer.parseInt(duracionCap.getText());
-        int nuevoAnimeId = obtenerAnimeIdSeleccionado(AnimeCombox);
 
-        // Crear un objeto Capitulo con los nuevos datos y el ID del capítulo
-        Capitulo capituloActualizado = new Capitulo(idCapitulo, nuevoAnimeId, nombreCapitulo, numeroCap, duracion);
-
-        // Actualizar los datos del capítulo en la base de datos
-        boolean actualizacionExitosa = capituloDAO.actualizarCapitulo(capituloActualizado);
-
-        if (actualizacionExitosa) {
-            JOptionPane.showMessageDialog(this, "Datos del capítulo actualizados correctamente.");
-            if (animesInstance != null) {
-                animesInstance.actualizarTable();
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Error al actualizar los datos del capítulo.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }*/
     
       private void actualizarDatosCapitulo(int idCapitulo) {
           
@@ -149,10 +124,8 @@ public class ModificarCap extends javax.swing.JFrame {
         int duracion = Integer.parseInt(duracionCap.getText());
         int nuevoAnimeId = obtenerAnimeIdSeleccionado(AnimeCombox);
 
-        // Crear un objeto Capitulo con los nuevos datos y el ID del capítulo
         Capitulo capituloActualizado = new Capitulo(idCapitulo, nuevoAnimeId, nombreCapitulo, numeroCap, duracion);
 
-        // Actualizar los datos del capítulo en la base de datos
         boolean actualizacionExitosa = capituloDAO.actualizarCapitulo(capituloActualizado);
 
         if (actualizacionExitosa) {

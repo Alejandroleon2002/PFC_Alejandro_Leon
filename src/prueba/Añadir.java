@@ -72,7 +72,7 @@ public class Añadir extends javax.swing.JFrame {
      public Añadir(int  idUsuario, int codAnime, Admin admin) {
          
         initComponents();
-        this.codAnime = codAnime; // Almacena la identificación del anime
+        this.codAnime = codAnime;
        
         this.adminInstance = admin;
         this.idUsuario = idUsuario;
@@ -135,7 +135,6 @@ public class Añadir extends javax.swing.JFrame {
     model.setAnimes(animes);
     table1.setModel(model);
 
-    // Ocultar las columnas si es necesario
     table1.getColumnModel().getColumn(6).setMinWidth(0);
     table1.getColumnModel().getColumn(6).setMaxWidth(0);
     table1.getColumnModel().getColumn(6).setWidth(0);
@@ -185,16 +184,15 @@ public class Añadir extends javax.swing.JFrame {
         return;
     }
 
-    // Crear un objeto Anime con los datos ingresados
+   
     Anime anime = new Anime(nombre, anyo, descripcion, director, estudio, idCategoria, idGenero);
 
-    // Insertar el anime en la base de datos
     Integer idAnimeInsertado = animeDAO.insertarAnimeYObtenerID(anime);
 
     if (idAnimeInsertado != null) {
         JOptionPane.showMessageDialog(this, "Anime agregado exitosamente!");
 
-        // Limpiar campos de texto
+
         txtAnyo.setText("");
         txtDirector.setText("");
         txtEstudio.setText("");
@@ -203,16 +201,13 @@ public class Añadir extends javax.swing.JFrame {
         comboCategoria.setSelectedIndex(0);
         comboGenero.setSelectedIndex(0);
 
-        // Añadir la imagen a la carpeta de imágenes con el ID del anime como nombre
         if (!rutaImagenSeleccionada.isEmpty()) {
             try {
-                // Obtener la ruta absoluta del directorio del proyecto
+
                 String projectDir = System.getProperty("user.dir");
 
-                // Construir la ruta de destino con el ID del anime como nombre
                 Path destinationPath = Paths.get(projectDir, "src", "imagenes", idAnimeInsertado + ".jpg");
 
-                // Copiar el archivo
                 Files.copy(Paths.get(rutaImagenSeleccionada), destinationPath, StandardCopyOption.REPLACE_EXISTING);
 
                 rutaImagenSeleccionada = "";
@@ -242,7 +237,6 @@ public class Añadir extends javax.swing.JFrame {
             model.setAnimes(animes);
             table1.setModel(model);
 
-            // Ocultar columnas no deseadas
             table1.getColumnModel().getColumn(6).setMinWidth(0);
             table1.getColumnModel().getColumn(6).setMaxWidth(0);
             table1.getColumnModel().getColumn(6).setWidth(0);
@@ -259,13 +253,11 @@ public class Añadir extends javax.swing.JFrame {
     if (result == JFileChooser.APPROVE_OPTION) {
         File imageFile = fileChooser.getSelectedFile();
 
-        // Verificar si el archivo tiene la extensión .jpg
         if (!imageFile.getName().toLowerCase().endsWith(".jpg")) {
             JOptionPane.showMessageDialog(this, "El archivo seleccionado no es un archivo JPG.", "Error de formato", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Guardar la ruta de la imagen seleccionada
         rutaImagenSeleccionada = imageFile.getAbsolutePath();
         JOptionPane.showMessageDialog(this, "Imagen añadida");
     }
@@ -509,7 +501,7 @@ public class Añadir extends javax.swing.JFrame {
             int idUsuario = obtenerIdUsuario();
             System.out.println(idUsuario); 
             
-            Modificar ventanaModificar = new Modificar(idUsuario, codAnime, adminInstance, this); // Pasar la instancia de "Añadir"
+            Modificar ventanaModificar = new Modificar(idUsuario, codAnime, adminInstance, this);
             ventanaModificar.setVisible(true);
             
             txtAnyo.setText("");

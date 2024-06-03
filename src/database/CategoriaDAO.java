@@ -107,12 +107,12 @@ public class CategoriaDAO {
     
     public List<Categoria> obtenerCategorias() {
     List<Categoria> categorias = new ArrayList<>();
-    String sql = "SELECT categoria_id, nombre FROM Categoria"; // Utiliza "categoria_id" en lugar de "categoriaId"
+    String sql = "SELECT categoria_id, nombre FROM Categoria";
     try (Connection connection = Conexion.obtenerConexion();
          PreparedStatement ps = connection.prepareStatement(sql);
          ResultSet rs = ps.executeQuery()) {
         while (rs.next()) {
-            int id = rs.getInt("categoria_id"); // Utiliza "categoria_id" en lugar de "categoriaId"
+            int id = rs.getInt("categoria_id");
             String nombre = rs.getString("nombre");
             categorias.add(new Categoria(id, nombre));
         }

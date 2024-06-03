@@ -48,21 +48,21 @@ public class Inicio_de_sesion extends javax.swing.JFrame {
         }
 
         if (usuarioDAO.verificarCredenciales(nombreUsuario, contraseña)) {
-          // Obtener la ID del usuario
+
             userID = usuarioDAO.obtenerIDUsuario(nombreUsuario);
             
             
             if (nombreUsuario.equals("admin")) {
-                // Abre el panel especial para administradores
+
                 Admin pa = new Admin(userID);
                 pa.setVisible(true);
             } else {
-                // Abre el panel normal de usuario
+
                 Usuarios pu = new Usuarios(userID );
                 pu.setVisible(true);
             }
 
-            // Cierra la ventana de inicio de sesión
+
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Credenciales incorrectas. Inténtelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
