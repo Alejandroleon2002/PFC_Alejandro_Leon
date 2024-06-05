@@ -10,6 +10,7 @@ import database.CategoriaDAO;
 import database.GeneroDAO;
 import database.MeGustaDAO;
 import database.UsuarioDAO;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.InputStream;
@@ -192,8 +193,36 @@ public class Informes extends javax.swing.JFrame {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
+          Connection conexion = null;
+    try {
+        Class.forName("org.hsqldb.jdbcDriver");
+        conexion = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost", "SA", "SA");
+    } catch (ClassNotFoundException ex) {
+        Logger.getLogger(Informes.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (SQLException ex) {
+        Logger.getLogger(Informes.class.getName()).log(Level.SEVERE, null, ex);
+    } 
+
+    // Load JRXML file
+    File archivoJRXML = new File("C:/Users/Usuario/Documents/NetBeansProjects/PFC_Alejandro_Leon/src/informes/Informe2.jrxml");
+    JasperReport jr = null;
+    try {
+        jr = JasperCompileManager.compileReport(archivoJRXML.getAbsolutePath());
         
+        // Create map for parameters
+        Map<String, Object> map = new HashMap<>();
+        String ruta_imagen = "informes/AnimeCheck.png";
+        map.put("imagen1", ruta_imagen); 
         
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jr, map, conexion);
+        JasperViewer visor = new JasperViewer(jasperPrint,false) ;
+        visor.setVisible(true);
+    } catch (JRException ex) {
+        Logger.getLogger(Informes.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+                
+        /*
          Map<String, Object> map = new HashMap<>();
         
         String ruta_imagen = "informes/AnimeCheck.png";
@@ -221,7 +250,7 @@ public class Informes extends javax.swing.JFrame {
             Conexion.cerrarConexion();
         }              
             
-                  
+            */    
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
