@@ -193,13 +193,7 @@ public class Añadir extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "Anime agregado exitosamente!");
 
 
-        txtAnyo.setText("");
-        txtDirector.setText("");
-        txtEstudio.setText("");
-        txtNombre.setText("");
-        txtDescripcion.setText("");
-        comboCategoria.setSelectedIndex(0);
-        comboGenero.setSelectedIndex(0);
+        reiniciarDatos();
 
         if (!rutaImagenSeleccionada.isEmpty()) {
             try {
@@ -219,6 +213,7 @@ public class Añadir extends javax.swing.JFrame {
 
         if (adminInstance != null) {
             adminInstance.actualizarTable();
+            adminInstance.combox();
         }
 
     } else {
@@ -263,10 +258,16 @@ public class Añadir extends javax.swing.JFrame {
     }
 }
 
-
-
-
-
+            public void reiniciarDatos() {
+            
+            txtAnyo.setText("");
+            txtDirector.setText("");
+            txtEstudio.setText("");
+            txtNombre.setText("");
+            txtDescripcion.setText("");
+            comboCategoria.setSelectedIndex(0);
+            comboGenero.setSelectedIndex(0);
+}
 
 
 
@@ -489,7 +490,7 @@ public class Añadir extends javax.swing.JFrame {
             
             int idUsuario = obtenerIdUsuario();
             System.out.println(idUsuario); 
-            
+            reiniciarDatos();
             Animes A = new Animes( idUsuario,codAnime);
             A.setVisible(true);
         }
@@ -503,14 +504,8 @@ public class Añadir extends javax.swing.JFrame {
             
             Modificar ventanaModificar = new Modificar(idUsuario, codAnime, adminInstance, this);
             ventanaModificar.setVisible(true);
+            reiniciarDatos();
             
-            txtAnyo.setText("");
-            txtDirector.setText("");
-            txtEstudio.setText("");
-            txtNombre.setText("");
-            txtDescripcion.setText("");
-            comboCategoria.setSelectedIndex(0);
-            comboGenero.setSelectedIndex(0);
         }
         if (table1.getSelectedColumn() == 10) {
         int codAnime = (int) table1.getValueAt(fila, 6);
@@ -521,23 +516,19 @@ public class Añadir extends javax.swing.JFrame {
             if (eliminacionExitosa) {
                 JOptionPane.showMessageDialog(null, "Anime, sus capítulos, comentarios y 'Me Gusta' eliminados correctamente.");
                 actualizarTables();
+                adminInstance.actualizarTable();
+                adminInstance.combox();
             } else {
                 JOptionPane.showMessageDialog(null, "Error al eliminar el anime, sus capítulos, comentarios y 'Me Gusta'.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
+        reiniciarDatos();
     }
     }//GEN-LAST:event_table1MouseClicked
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        txtAnyo.setText("");
-        txtDirector.setText("");
-        txtEstudio.setText("");
-        txtNombre.setText("");
-        txtDescripcion.setText("");
-        comboCategoria.setSelectedIndex(0);
-        comboGenero.setSelectedIndex(0);
-        
+        reiniciarDatos();
         actualizarTables();
     }//GEN-LAST:event_jButton2ActionPerformed
 

@@ -130,9 +130,11 @@ public class Modificar extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "Datos del anime actualizados correctamente.");
         if (adminInstance != null) {
             adminInstance.actualizarTable();
+            adminInstance.combox();
         }
         if (ventanaAñadir != null && ventanaAñadir.isVisible()) {
             ventanaAñadir.actualizarTables();
+            ventanaAñadir.combox();
         }
     } else {
         JOptionPane.showMessageDialog(this, "Error al actualizar los datos del anime.", "Error", JOptionPane.ERROR_MESSAGE);

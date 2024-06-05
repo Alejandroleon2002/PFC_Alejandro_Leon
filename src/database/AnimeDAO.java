@@ -325,11 +325,9 @@ public class AnimeDAO {
     return false;
 }
 
-    
-
     public boolean eliminarAnime(int idAnime) {
     String sqlMeGusta = "DELETE FROM MeGusta WHERE anime_id = ?";
-    String sqlComentarios = "DELETE FROM Comentario WHERE anime_id = ?";
+    String sqlComentarios = "DELETE FROM Comentario WHERE id_Anime = ?";
     String sqlCapitulos = "DELETE FROM Capitulo WHERE anime_id = ?";
     String sqlAnime = "DELETE FROM Anime WHERE anime_id = ?";
 
@@ -356,7 +354,7 @@ public class AnimeDAO {
     }
     return false;
 }
-    
+
     public boolean eliminar(int animeId) {
         String sql = "DELETE FROM anime WHERE anime_id = ?";
         

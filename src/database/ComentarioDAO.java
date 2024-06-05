@@ -61,6 +61,8 @@ public class ComentarioDAO {
             Conexion.cerrarConexion();
         }
     }
+    
+    
 
     public boolean eliminar(int comentarioId) {
         Connection con = null;
