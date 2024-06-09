@@ -261,15 +261,16 @@ public class CapituloDAO {
         }
     }
 
-    public void agregarComentario(int idCapitulo, int idAnime, Comentario comentario) {
-    String sql = "INSERT INTO Comentario (usuario_id, capitulo_id, comentario, fecha_comentario) VALUES (?, ?, ?, ?)";
+    public void agregarComentario(int idAnime, int idCapitulo, Comentario comentario) {
+    String sql = "INSERT INTO Comentario (usuario_id, capitulo_id, id_Anime, comentario, fecha_comentario) VALUES (?, ?, ?, ?, ?)";
 
     try (Connection con = Conexion.obtenerConexion();
          PreparedStatement ps = con.prepareStatement(sql)) {
         ps.setInt(1, comentario.getUsuarioId());
         ps.setInt(2, idCapitulo);
-        ps.setString(3, comentario.getComentario());
-        ps.setDate(4, (Date) comentario.getFechaComentario());
+        ps.setInt(3, idAnime);
+        ps.setString(4, comentario.getComentario());
+        ps.setDate(5, (Date) comentario.getFechaComentario());
 
         ps.executeUpdate();
     } catch (SQLException e) {
@@ -278,6 +279,22 @@ public class CapituloDAO {
     }
 }
 
+    public void agregarComentario(int idCapitulo, Comentario comentario) {
+    String sql = "INSERT INTO Comentario (usuario_id, capitulo_id, comentario, fecha_comentario) VALUES (?, ?, ?, ?)";
+
+    try (Connection con = Conexion.obtenerConexion();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, comentario.getUsuarioId());
+        ps.setInt(2, idCapitulo);
+        ps.setString(3, comentario.getComentario());
+        ps.setDate(4, new Date(comentario.getFechaComentario().getTime()));
+
+        ps.executeUpdate();
+    } catch (SQLException e) {
+        System.out.println("Error al agregar comentario: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
    
     
     public boolean guardar(Capitulo capitulo) {

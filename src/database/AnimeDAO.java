@@ -326,25 +326,25 @@ public class AnimeDAO {
 }
 
     public boolean eliminarAnime(int idAnime) {
-    String sqlMeGusta = "DELETE FROM MeGusta WHERE anime_id = ?";
     String sqlComentarios = "DELETE FROM Comentario WHERE id_Anime = ?";
     String sqlCapitulos = "DELETE FROM Capitulo WHERE anime_id = ?";
+    String sqlMeGusta = "DELETE FROM MeGusta WHERE anime_id = ?";
     String sqlAnime = "DELETE FROM Anime WHERE anime_id = ?";
 
     try (Connection con = Conexion.obtenerConexion();
-         PreparedStatement psMeGusta = con.prepareStatement(sqlMeGusta);
          PreparedStatement psComentarios = con.prepareStatement(sqlComentarios);
          PreparedStatement psCapitulos = con.prepareStatement(sqlCapitulos);
+         PreparedStatement psMeGusta = con.prepareStatement(sqlMeGusta);
          PreparedStatement psAnime = con.prepareStatement(sqlAnime)) {
-
-        psMeGusta.setInt(1, idAnime);
-        psMeGusta.executeUpdate();
 
         psComentarios.setInt(1, idAnime);
         psComentarios.executeUpdate();
 
         psCapitulos.setInt(1, idAnime);
         psCapitulos.executeUpdate();
+
+        psMeGusta.setInt(1, idAnime);
+        psMeGusta.executeUpdate();
 
         psAnime.setInt(1, idAnime);
         int rowsAffected = psAnime.executeUpdate();
@@ -354,6 +354,7 @@ public class AnimeDAO {
     }
     return false;
 }
+
 
     public boolean eliminar(int animeId) {
         String sql = "DELETE FROM anime WHERE anime_id = ?";

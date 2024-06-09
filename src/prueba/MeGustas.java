@@ -98,6 +98,7 @@ public class MeGustas extends javax.swing.JFrame {
         jLabel11 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         table1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {

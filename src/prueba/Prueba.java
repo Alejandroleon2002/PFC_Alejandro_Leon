@@ -27,8 +27,9 @@ public class Prueba {
                   System.err.println( "Failed to initialize LaF" );
         }
         
-        Inicio_de_sesion i = new Inicio_de_sesion();
-        i.setVisible(true);
+        InicioDeSesion in = new InicioDeSesion();
+        in.setVisible(true);
+  
         
          
     }

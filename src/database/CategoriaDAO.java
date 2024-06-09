@@ -131,6 +131,20 @@ public class CategoriaDAO {
     }
     
     
+    public Integer obtenerIdPorNombre(String nombre) throws SQLException {
+        Integer id = null;
+        String query = "SELECT CATEGORIA_ID FROM CATEGORIA WHERE NOMBRE = ?";
+        try (Connection conexion = Conexion.obtenerConexion();
+             PreparedStatement stmt = conexion.prepareStatement(query)) {
+            stmt.setString(1, nombre);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                id = rs.getInt("CATEGORIA_ID");
+            }
+        }
+        return id;
+    }
+    
     
     public List<Categoria> obtenerCategoriasPorAnime(int codAnime) {
         List<Categoria> categorias = new ArrayList<>();

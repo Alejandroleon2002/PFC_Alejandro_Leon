@@ -4,11 +4,19 @@
  */
 package prueba;
 
+import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.intellijthemes.FlatArcDarkOrangeIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatArcOrangeIJTheme;
 import database.AnimeDAO;
 import database.AnimeTableModel;
 import database.CategoriaDAO;
 import database.GeneroDAO;
 import database.UsuarioDAO;
+import java.awt.EventQueue;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -167,11 +175,14 @@ public class Admin extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
         jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenu4 = new javax.swing.JMenu();
 
@@ -246,6 +257,13 @@ public class Admin extends javax.swing.JFrame {
 
         jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/AnimeCheck.png"))); // NOI18N
 
+        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/usuario.png"))); // NOI18N
+        jLabel10.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel10MouseClicked(evt);
+            }
+        });
+
         jMenu1.setText("Añadir");
         jMenu1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -277,6 +295,23 @@ public class Admin extends javax.swing.JFrame {
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Apariencia");
+
+        jMenuItem3.setText("Modo Claro");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem3);
+
+        jMenuItem4.setText("Modo Oscuro");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem4);
+
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Información");
@@ -314,11 +349,13 @@ public class Admin extends javax.swing.JFrame {
                         .addGap(25, 25, 25))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jLabel9)
-                        .addGap(89, 89, 89)
+                        .addGap(61, 61, 61)
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblNombreUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(123, 123, 123))))
+                        .addGap(55, 55, 55)
+                        .addComponent(jLabel10)
+                        .addGap(64, 64, 64))))
             .addGroup(layout.createSequentialGroup()
                 .addGap(157, 157, 157)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -360,17 +397,17 @@ public class Admin extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(98, 98, 98)
+                .addGap(28, 28, 28)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel9)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel8)
-                            .addComponent(lblNombreUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(47, 47, 47))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel9)
-                        .addGap(18, 18, 18)))
+                            .addComponent(lblNombreUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel10)
+                        .addGap(83, 83, 83)))
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(34, 34, 34)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -453,18 +490,32 @@ public class Admin extends javax.swing.JFrame {
             
         }
         if (table1.getSelectedColumn() == 10) {
-        int codAnime = (int) table1.getValueAt(fila, 6);
-        
-        int confirm = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que deseas eliminar este anime, sus capítulos y comentarios?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            boolean eliminacionExitosa = animeDAO.eliminarAnime(codAnime);
-            if (eliminacionExitosa) {
-                JOptionPane.showMessageDialog(null, "Anime, sus capítulos, comentarios y 'Me Gusta' eliminados correctamente.");
-                actualizarTable();
-            } else {
-                JOptionPane.showMessageDialog(null, "Error al eliminar el anime, sus capítulos, comentarios y 'Me Gusta'.", "Error", JOptionPane.ERROR_MESSAGE);
+            int codAnime = (int) table1.getValueAt(fila, 6);
+
+            int confirm = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que deseas eliminar este anime, sus capítulos y comentarios?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                boolean eliminacionExitosa = animeDAO.eliminarAnime(codAnime);
+                if (eliminacionExitosa) {
+                    // Eliminar la imagen asociada
+                    try {
+                        String projectDir = System.getProperty("user.dir");
+                        Path imagePath = Paths.get(projectDir, "src", "imagenes", codAnime + ".jpg");
+
+                        // Verificar si la imagen existe y eliminarla
+                        if (Files.exists(imagePath)) {
+                            Files.delete(imagePath);
+                        }
+
+                        JOptionPane.showMessageDialog(null, "Anime, sus capítulos, comentarios, 'Me Gusta' y su imagen eliminados correctamente.");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Error al eliminar la imagen: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    actualizarTable();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error al eliminar el anime, sus capítulos, comentarios y 'Me Gusta'.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
-        }
         reiniciarDatos();
         combox();
     }
@@ -551,6 +602,35 @@ public class Admin extends javax.swing.JFrame {
         in.setVisible(true);
     }//GEN-LAST:event_jMenu4MouseClicked
 
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        // TODO add your handling code here:
+         EventQueue.invokeLater(new Runnable(){
+                @Override
+                public void run(){
+                   
+                    FlatArcOrangeIJTheme.setup();
+                    FlatLaf.updateUI();
+            }
+            });
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        // TODO add your handling code here:
+         EventQueue.invokeLater(new Runnable(){
+                @Override
+                public void run(){
+                    FlatArcDarkOrangeIJTheme.setup();
+                    FlatLaf.updateUI();
+            }
+            });
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void jLabel10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel10MouseClicked
+        // TODO add your handling code here:
+        MeGustas frame = new MeGustas(idUsuario);
+        frame.setVisible(true);
+    }//GEN-LAST:event_jLabel10MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -595,6 +675,7 @@ public class Admin extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JComboBox<String> jComboBox4;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -609,6 +690,8 @@ public class Admin extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;

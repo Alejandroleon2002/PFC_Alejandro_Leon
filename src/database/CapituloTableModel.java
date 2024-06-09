@@ -62,9 +62,9 @@ public class CapituloTableModel extends AbstractTableModel {
             case 2: return capitulo.getNumeroCapitulo();
             case 3: return capitulo.getTitulo();
             case 4: return capitulo.getDuracion();
-            case 5: return new ImageIcon(getClass().getResource("/imagenes/File-Text.jpg"));
-            case 6: return new ImageIcon(getClass().getResource("/imagenes/editar.jpg"));
-            case 7: return new ImageIcon(getClass().getResource("/imagenes/papelera.jpg"));
+            case 5: return new ImageIcon(getClass().getResource("/imagenes/datos.png"));
+            case 6: return new ImageIcon(getClass().getResource("/imagenes/editar.png"));
+            case 7: return new ImageIcon(getClass().getResource("/imagenes/papeleras.png"));
             default: return null;
         }
     }

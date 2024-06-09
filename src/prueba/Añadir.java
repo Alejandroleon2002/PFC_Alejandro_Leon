@@ -304,6 +304,7 @@ public class Añadir extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         table1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -378,14 +379,14 @@ public class Añadir extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 859, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addGap(38, 38, 38)
+                .addGap(48, 48, 48)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(jLabel6)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtDirector, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                             .addComponent(jLabel7)
@@ -398,7 +399,7 @@ public class Añadir extends javax.swing.JFrame {
                             .addGap(31, 31, 31)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(txtAnyo)
-                                .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))))
+                                .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(48, 48, 48)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -419,14 +420,14 @@ public class Añadir extends javax.swing.JFrame {
                             .addComponent(comboGenero, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jLabel4)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(126, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -461,7 +462,7 @@ public class Añadir extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton1)
                             .addComponent(jButton2))))
-                .addGap(0, 139, Short.MAX_VALUE))
+                .addGap(46, 46, 46))
         );
 
         pack();
@@ -508,21 +509,36 @@ public class Añadir extends javax.swing.JFrame {
             
         }
         if (table1.getSelectedColumn() == 10) {
-        int codAnime = (int) table1.getValueAt(fila, 6);
-        
-        int confirm = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que deseas eliminar este anime, sus capítulos y comentarios?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            boolean eliminacionExitosa = animeDAO.eliminarAnime(codAnime);
-            if (eliminacionExitosa) {
-                JOptionPane.showMessageDialog(null, "Anime, sus capítulos, comentarios y 'Me Gusta' eliminados correctamente.");
-                actualizarTables();
-                adminInstance.actualizarTable();
-                adminInstance.combox();
-            } else {
-                JOptionPane.showMessageDialog(null, "Error al eliminar el anime, sus capítulos, comentarios y 'Me Gusta'.", "Error", JOptionPane.ERROR_MESSAGE);
+            
+            int codAnime = (int) table1.getValueAt(fila, 6);
+
+            int confirm = JOptionPane.showConfirmDialog(null, "¿Estás seguro de que deseas eliminar este anime, sus capítulos y comentarios?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                boolean eliminacionExitosa = animeDAO.eliminarAnime(codAnime);
+                if (eliminacionExitosa) {
+                    // Eliminar la imagen asociada
+                    try {
+                        String projectDir = System.getProperty("user.dir");
+                        Path imagePath = Paths.get(projectDir, "src", "imagenes", codAnime + ".jpg");
+
+                        // Verificar si la imagen existe y eliminarla
+                        if (Files.exists(imagePath)) {
+                            Files.delete(imagePath);
+                        }
+
+                        JOptionPane.showMessageDialog(null, "Anime, sus capítulos, comentarios, 'Me Gusta' y su imagen eliminados correctamente.");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Error al eliminar la imagen: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    actualizarTables();
+                    adminInstance.actualizarTable();
+                    adminInstance.combox();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error al eliminar el anime, sus capítulos, comentarios y 'Me Gusta'.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
-        }
-        reiniciarDatos();
+            reiniciarDatos();
     }
     }//GEN-LAST:event_table1MouseClicked
 

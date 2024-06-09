@@ -127,10 +127,10 @@ public class Capitulos extends javax.swing.JFrame {
 
 
 
+   
+    
     private void comentarCapitulo(String comentarioTexto) {
-
     if (!comentarioTexto.isEmpty()) {
-
         Comentario comentario = new Comentario();
         comentario.setComentario(comentarioTexto);
         comentario.setUsuarioId(idUsuario);
@@ -138,11 +138,13 @@ public class Capitulos extends javax.swing.JFrame {
         java.util.Date fechaActual = new java.util.Date();
         comentario.setFechaComentario(new java.sql.Date(fechaActual.getTime()));
 
-        capituloDAO.agregarComentario(codCap, codAnime, comentario);
+        // Llama al método agregarComentario que incluye idAnime
+        capituloDAO.agregarComentario(codAnime, codCap, comentario);
 
         mostrarInformacionCapitulo();
     }
 }
+
     
 
     /**
@@ -170,6 +172,7 @@ public class Capitulos extends javax.swing.JFrame {
         panelComentarios = new javax.swing.JScrollPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         jLabel1.setText("Numero Capitulo:");
 

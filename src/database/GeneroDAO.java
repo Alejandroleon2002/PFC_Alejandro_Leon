@@ -95,6 +95,20 @@ public class GeneroDAO {
         return ps.executeQuery();
     }
     
+    public Integer obtenerIdPorNombre(String nombre) throws SQLException {
+        Integer id = null;
+        String query = "SELECT GENERO_ID FROM GENERO WHERE NOMBRE = ?";
+        try (Connection conexion = Conexion.obtenerConexion();
+             PreparedStatement stmt = conexion.prepareStatement(query)) {
+            stmt.setString(1, nombre);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                id = rs.getInt("GENERO_ID");
+            }
+        }
+        return id;
+    }
+    
     public List<Genero> obtenerTodosLosGeneros() {
         List<Genero> generos = new ArrayList<>();
         String sql = "SELECT * FROM Genero";

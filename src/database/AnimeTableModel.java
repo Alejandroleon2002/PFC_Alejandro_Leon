@@ -64,9 +64,9 @@ public class AnimeTableModel extends AbstractTableModel {
             case 5: return anime.getGenero().getNombre();
             case 6: return anime.getIdAnime();
             case 7: return anime.getDescripcion();
-            case 8: return new ImageIcon(getClass().getResource("/imagenes/File-Text.jpg"));
-            case 9: return new ImageIcon(getClass().getResource("/imagenes/editar.jpg"));
-            case 10: return new ImageIcon(getClass().getResource("/imagenes/papelera.jpg"));
+            case 8: return new ImageIcon(getClass().getResource("/imagenes/datos.png"));
+            case 9: return new ImageIcon(getClass().getResource("/imagenes/editar.png"));
+            case 10: return new ImageIcon(getClass().getResource("/imagenes/papeleras.png"));
             default: return null;
         }
         

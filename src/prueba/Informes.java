@@ -32,6 +32,8 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.view.JasperViewer;
 
+
+
 /**
  *
  * @author Usuario
@@ -45,7 +47,7 @@ public class Informes extends javax.swing.JFrame {
     private GeneroDAO generoDAO;
     private CapituloDAO capituloDAO;
     private MeGustaDAO meGustaDAO;
-   
+    String condicion2;
 
     /**
      * Creates new form Informes
@@ -90,6 +92,8 @@ public class Informes extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
+    
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -109,6 +113,7 @@ public class Informes extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         jButton2.setText("Informe 1");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -189,68 +194,97 @@ public class Informes extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+       Connection conexion = null;
+       String condicion2 = "";
+    try {
+        // Obtener conexión utilizando el método estático de la clase Conexion
+        
+     
+        // Obtener selecciones de categoría y género
+        String categoriaSeleccionada = (String) comboCategoria.getSelectedItem();
+        String generoSeleccionado = (String) comboGenero.getSelectedItem();
+
+        // Construir la condición SQL
+        
+
+        // Agregar condición para categoría si se seleccionó una
+        if (!"Elija uno".equals(categoriaSeleccionada)) {
+            Integer idCategoria = categoriaDAO.obtenerIdPorNombre(categoriaSeleccionada);
+            if (idCategoria != null) {
+                condicion2 += " AND \"ANIME\".\"ID_CATEGORIA\" = " + idCategoria;
+            }
+        }
+
+        // Agregar condición para género si se seleccionó uno
+        if (!"Elija uno".equals(generoSeleccionado)) {
+            Integer idGenero = generoDAO.obtenerIdPorNombre(generoSeleccionado);
+            if (idGenero != null) {
+                condicion2 += " AND \"ANIME\".\"ID_GENERO\" = " + idGenero;
+            }
+        }
+
+        System.out.println("Condición SQL generada: " + condicion2);
+        
+        // Crear mapa de parámetros
+        Map<String, Object> map = new HashMap<>();
+        map.put("condicion", condicion2);
+        
+        
+        conexion = Conexion.obtenerConexion();
+        String ruta_imagen = "informes/AnimeCheck.png";
+        map.put("imagen", ruta_imagen);
+       
+
+        // Obtener el archivo del informe y compilarlo
+        InputStream vinculoarchivo = Informes.class.getResourceAsStream("/informes/Informe1.jrxml");
+        JasperReport jr = JasperCompileManager.compileReport(vinculoarchivo);
+
+        // Llenar y mostrar el informe
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jr, map, conexion);
+        JasperViewer visor = new JasperViewer(jasperPrint, false);
+        visor.setVisible(true);
+    } catch (JRException | SQLException ex) {
+        Logger.getLogger(Informes.class.getName()).log(Level.SEVERE, null, ex);
+        System.out.println("Error al generar el informe: " + ex.getMessage());
+    } finally {
+        // Cerrar la conexión en el bloque finally para asegurar que siempre se cierre
+        Conexion.cerrarConexion();
+    }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-          Connection conexion = null;
-    try {
-        Class.forName("org.hsqldb.jdbcDriver");
-        conexion = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost", "SA", "SA");
-    } catch (ClassNotFoundException ex) {
-        Logger.getLogger(Informes.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (SQLException ex) {
-        Logger.getLogger(Informes.class.getName()).log(Level.SEVERE, null, ex);
-    } 
 
-    // Load JRXML file
-    File archivoJRXML = new File("C:/Users/Usuario/Documents/NetBeansProjects/PFC_Alejandro_Leon/src/informes/Informe2.jrxml");
-    JasperReport jr = null;
-    try {
-        jr = JasperCompileManager.compileReport(archivoJRXML.getAbsolutePath());
-        
-        // Create map for parameters
-        Map<String, Object> map = new HashMap<>();
-        String ruta_imagen = "informes/AnimeCheck.png";
-        map.put("imagen1", ruta_imagen); 
-        
-        JasperPrint jasperPrint = JasperFillManager.fillReport(jr, map, conexion);
-        JasperViewer visor = new JasperViewer(jasperPrint,false) ;
-        visor.setVisible(true);
-    } catch (JRException ex) {
-        Logger.getLogger(Informes.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-                
-        /*
-         Map<String, Object> map = new HashMap<>();
-        
-        String ruta_imagen = "informes/AnimeCheck.png";
-           
-        map.put("imagen1", ruta_imagen); 
-        
-  
-        //InputStream vinculoarchivo = getClass().getResourceAsStream("informes/Informe2.jrxml");
-
-        InputStream vinculoarchivo = getClass().getResourceAsStream("C:/Users/Usuario/Documents/NetBeansProjects/PFC_Alejandro_Leon/src/informes/Informe2.jrxml");
-
-
-
-       
-        JasperReport jr = null;
+        Connection conexion = null;
         try {
-            jr = JasperCompileManager.compileReport(vinculoarchivo);
-            Connection conexion = Conexion.obtenerConexion();
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jr, null, conexion);
-            JasperViewer visor = new JasperViewer(jasperPrint,false) ;
+
+            conexion = Conexion.obtenerConexion();
+
+            InputStream vinculoarchivo = Informes.class.getResourceAsStream("/informes/Informe2.jrxml");
+
+            JasperReport jr = JasperCompileManager.compileReport(vinculoarchivo);
+
+            Map<String, Object> map = new HashMap<>();
+            String ruta_imagen = "informes/AnimeCheck.png";
+            map.put("imagen1", ruta_imagen);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jr, map, conexion);
+
+            JasperViewer visor = new JasperViewer(jasperPrint, false);
             visor.setVisible(true);
         } catch (JRException ex) {
             Logger.getLogger(Informes.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            Conexion.cerrarConexion();
-        }              
-            
-            */    
+            if (conexion != null) {
+                try {
+                    conexion.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(Informes.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+}
+
+
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
